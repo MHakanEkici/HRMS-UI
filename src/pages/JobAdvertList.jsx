@@ -1,19 +1,61 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import JobAdvertService from '../services/jobAdvertService'
 import { Link } from 'react-router-dom'
-import { Icon, Label, Menu, Table } from 'semantic-ui-react'
+import { Icon, Label, Menu, Table, Card } from 'semantic-ui-react'
+// import { addToCart } from '../store/actions/cartActions'
+import { useSelector } from 'react-redux'
+import { toast } from "react-toastify";
+import { useDispatch } from 'react-redux'
+import { Fragment } from 'react'
 
 export default function JobAdvertList() {
+
     const [jobAdverts, setJobAdverts] = useState([])
 
     useEffect(() => {
         let jobAdvertService = new JobAdvertService()
-        jobAdvertService.getJobAdverts().then(result => setJobAdverts(result.data.data)) 
+        jobAdvertService.getJobAdverts().then(result => setJobAdverts(result.data.data))
     }, [])
+
+    // const dispatch = useDispatch()
+
+    // const handleAddToCart = (product) => {
+    //     dispatch(addToCart(product));       //dispatch bir aksiyonu çağırmak için kullanılır
+    //     toast.success(`${product.productName} sepete eklendi!`)
+    // }
+
+    //const {cartItems} = useSelector(state => state.cart)  //cartItems yerine istediğin bir şey yazabilirsin
+
 
     return (
         <div>
-            <Table celled>
+
+            <Card.Group>
+                {jobAdverts.map((jobAdvert) => (
+                    <Fragment>
+                        <Card fluid color="purple" href={`/jobAdvert/${jobAdvert.jobAdvertId}`} key={jobAdvert.jobAdvertId}>
+                            <Card.Content >
+                                <Card.Header textAlign="left">{jobAdvert.job.jobName}</Card.Header>
+                                <Card.Meta textAlign="left">{jobAdvert.employer.companyName}</Card.Meta>
+                                <Card.Description textAlign="left" content={jobAdvert.city.cityName} />
+                                <Card.Description textAlign="left" content={jobAdvert.workTime} />
+                                <Card.Description textAlign="left" content={jobAdvert.workStyle} />
+                                <Card.Description  >
+                                    <div style={{ float: "left" }}>
+                                        {"Son Basvuru Tarihi: " + jobAdvert.deadline}
+                                    </div>
+                                    <div style={{ float: "right" }}>
+                                        {"Oluşturulma tarihi: " + jobAdvert.createTime}
+                                    </div>
+                                </Card.Description>
+                            </Card.Content>
+                        </Card>                     
+                        
+                    </Fragment>
+                ))}
+            </Card.Group>
+
+            {/* <Table celled>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Meslek Adı</Table.HeaderCell>
@@ -41,9 +83,9 @@ export default function JobAdvertList() {
                         ))
                     }
 
-                </Table.Body>
+                </Table.Body> */}
 
-                {/* <Table.Footer>
+            {/* <Table.Footer>
                     <Table.Row>
                         <Table.HeaderCell colSpan='3'>
                             <Menu floated='right' pagination>
@@ -61,7 +103,7 @@ export default function JobAdvertList() {
                         </Table.HeaderCell>
                     </Table.Row>
                 </Table.Footer> */}
-            </Table>
+            {/* </Table> */}
         </div>
     )
 }

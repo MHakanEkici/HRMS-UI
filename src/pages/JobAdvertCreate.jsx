@@ -96,7 +96,7 @@ export default function JobAdvertCreate() {
                 workStyle: values.workStyle
             }
 
-             jobAdvertService.add(request).then((result) => console.log(result));
+            jobAdvertService.add(request).then((result) => console.log(result));
 
         },
     });
@@ -112,78 +112,94 @@ export default function JobAdvertCreate() {
                 <Card.Content header='İş ilanı Ekle' />
                 <Card.Content>
                     <Form onSubmit={formik.handleSubmit}>
-                        <Form.Field style={{ marginBottom: "1rem" }}>
-                            <label htmlFor="salary">Çalışma Türü</label>
-                            <Dropdown
-                                search
-                                selection
-                                onChange={(event, data) => {
-                                    handleChangeSemantic(data.value, data.name)
-                                }}
-                                name='workStyle'
-                                value={formik.values.workStyle}
-                                options={workStyles}
-                                placeholder='Çalışma Şeklini Seçiniz'
+                        <Form.Group widths='equal'>
+                            <Form.Field>
+                                <label htmlFor="salary">Meslek</label>
+                                <Dropdown
+                                    search
+                                    selection
+                                    onChange={(event, data) =>
+                                        handleChangeSemantic(data.value, data.name)
+                                    }
+                                    name='job'
+                                    value={formik.values.job}
+                                    options={jobs}
+                                    placeholder='Meslek Seçiniz'
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label htmlFor="salary">Şehir</label>
+                                <Dropdown
+                                    search
+                                    selection
+                                    onChange={(event, data) =>
+                                        handleChangeSemantic(data.value, data.name)
+                                    }
+                                    name='city'
+                                    value={formik.values.city}
+                                    options={cities}
+                                    placeholder='Şehir Seçiniz'
+                                />
+                            </Form.Field>
+                        </Form.Group>
+                        <Form.Group widths='equal'>
+                            <Form.Field style={{ marginBottom: "1rem" }}>
+                                <label htmlFor="workStyle">Çalışma Türü</label>
+                                <Dropdown
+                                    search
+                                    selection
+                                    onChange={(event, data) => {
+                                        handleChangeSemantic(data.value, data.name)
+                                    }}
+                                    name='workStyle'
+                                    value={formik.values.workStyle}
+                                    options={workStyles}
+                                    placeholder='Çalışma Şeklini Seçiniz'
 
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="salary">Çalışma Saati</label>
-                            <Dropdown
-                                search
-                                selection
-                                onChange={(event, data) =>
-                                    handleChangeSemantic(data.value, data.name)
-                                }
-                                name='workTime'
-                                value={formik.values.workTime}
-                                options={workTimes}
-                                placeholder='Çalışma Zamanını Seçiniz'
-
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="salary">Şehir</label>
-                            <Dropdown
-                                search
-                                selection
-                                onChange={(event, data) =>
-                                    handleChangeSemantic(data.value, data.name)
-                                }
-                                name='city'
-                                value={formik.values.city}
-                                options={cities}
-                                placeholder='Şehir Seçiniz'
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="salary">Meslek</label>
-                            <Dropdown
-                                search
-                                selection
-                                onChange={(event, data) =>
-                                    handleChangeSemantic(data.value, data.name)
-                                }
-                                name='job'
-                                value={formik.values.job}
-                                options={jobs}
-                                placeholder='Meslek Seçiniz'
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="deadline">Son Başvuru Tarihi</label>
-                            <Input
-                                id="deadline"
-                                name="deadline"
-                                type="date"
-                                onChange={formik.handleChange}
-                                value={formik.values.deadline}
-                                placeholder='Son başvuru tarih giriniz'
-                            />
-                        </Form.Field>
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label htmlFor="workTime">Çalışma Saati</label>
+                                <Dropdown
+                                    search
+                                    selection
+                                    onChange={(event, data) =>
+                                        handleChangeSemantic(data.value, data.name)
+                                    }
+                                    name='workTime'
+                                    value={formik.values.workTime}
+                                    options={workTimes}
+                                    placeholder='Çalışma Zamanını Seçiniz'
+                                />
+                            </Form.Field>
+                        </Form.Group>
+                        <Form.Group widths='equal'>
+                            <Form.Field>
+                                <label htmlFor="salary">Maaş</label>
+                                <TextArea rows={1}
+                                    id="salary"
+                                    name="salary"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    value={formik.values.salary}
+                                    placeholder='Maaş Giriniz'
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label htmlFor="openPositionCount">Açık Pozisyon Sayısı</label>
+                                <TextArea rows={1}
+                                    id="openPositionCount"
+                                    name="openPositionCount"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    value={formik.values.openPositionCount}
+                                    placeholder='Açık Pozisyon Sayısını Giriniz'
+                                />
+                            </Form.Field>
+                        </Form.Group>
                         <Form.Field>
                             <label htmlFor="description">Açıklama</label>
-                            <TextArea
+                            <TextArea rows={8}
                                 id="description"
                                 name="description"
                                 type="text"
@@ -192,26 +208,15 @@ export default function JobAdvertCreate() {
                                 placeholder='Açıklama giriniz'
                             />
                         </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="salary">Maaş</label>
-                            <TextArea
-                                id="salary"
-                                name="salary"
-                                type="text"
+                        <Form.Field width={5}>
+                            <label htmlFor="deadline">Son Başvuru Tarihi</label> 
+                            <Input
+                                id="deadline"
+                                name="deadline"
+                                type="date"
                                 onChange={formik.handleChange}
-                                value={formik.values.salary}
-                                placeholder='Maaş Giriniz'
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="openPositionCount">Açık Pozisyon Sayısı</label>
-                            <TextArea
-                                id="openPositionCount"
-                                name="openPositionCount"
-                                type="text"
-                                onChange={formik.handleChange}
-                                value={formik.values.openPositionCount}
-                                placeholder='Açık Pozisyon Sayısını Giriniz'
+                                value={formik.values.deadline}
+                                placeholder='Son başvuru tarih giriniz'                               
                             />
                         </Form.Field>
                         <Button
