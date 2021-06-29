@@ -3,12 +3,15 @@ import { useParams } from "react-router";
 import { Header, Icon, Table, Button, Grid, Card } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector } from 'react-redux'
 import JobAdvertService from "../services/jobAdvertService";
 
 export default function JobAdvertDetail() {
   let { id } = useParams();
 
   const [jobAdvert, setJobAdvert] = useState({})
+
+  const { isLogin, isEmployer } = useSelector(state => state.globalReducer)
 
   useEffect(() => {
     let jobAdvertService = new JobAdvertService()
@@ -19,7 +22,12 @@ export default function JobAdvertDetail() {
 
 
   const handleApply = () => {
-    toast.success("Başvuru yapıldı")
+    if (isLogin) {
+      toast.success("İlana başvuru yapıldı")
+    }
+    else {
+      //TODO kayıt olma sayfasına yönlendirilecek
+    }
   }
 
   return (

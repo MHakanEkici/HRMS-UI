@@ -69,7 +69,7 @@ export default function JobAdvertCreate() {
             job: 0,
             deadline: '',
             description: '',
-            employerId: 84,
+            employerId: 84, //TODO
             salary: "belirtilmemiş",
             openPositionCount: "belirtilmemiş"
         },

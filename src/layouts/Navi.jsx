@@ -1,21 +1,37 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Button, Container, Menu } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useHistory } from 'react-router'
 import { toast } from "react-toastify";
 
 export default function Navi() {
 
     const { isLogin, isEmployer } = useSelector(state => state.globalReducer)
 
+    const history = useHistory()
+
     const signIn = () => {
-        //login servisiini çağır
+        // Login sayfasına yönlendir "/login"
+
+        //login sayfasında servisini çağır
         //sonra then kısmında gelen result isSuccess ise  dispatch(signIn(result)); çağır
-        toast.success("Giriş yapıldı")
+        history.push("/login")
     }
 
     const signOut = () => {
         toast.success("Çıkış yapıldı")
+        history.push("/") //anasayfaya yani / pathine yönlendir.     
+    }
+
+    const registerCandidate = () => {
+        // Üye kayıt olma pathine "/register/candidate" pathine yönlendir.
+        history.push("/register/candidate")
+    }
+
+    const registerEmployer = () => {
+        // İşveren kayıt olma pathine "/register/employer" pathine yönlendir.
+        history.push("/register/employer")
     }
 
     return (
@@ -28,38 +44,39 @@ export default function Navi() {
                             style={{ color: 'black' }}
                         />
                     </Link>
-                   {isEmployer && 
+                    {isEmployer &&
                         <Link to={`/jobAdvertCreate`}>
                             <Menu.Item
                                 name='İlan Oluştur'
-                             // active={activeItem === 'messages'}
-                                // onClick={this.handleItemClick}
+                            // active={activeItem === 'messages'}
+                            // onClick={this.handleItemClick}
                             />
                         </Link>
                     }
 
                     <Menu.Menu position='right'>
                         <Menu.Item>
-                            {isLogin ?
-                                <Button
-                                    primary
-                                    onClick={() => signOut()}
-                                >
-                                    Çıkış Yap
-                                </Button>
-                            :
-                                <Button
-                                    primary
-                                    onClick={() => signIn()}
-                                >
-                                    Giriş Yap
-                                </Button>
+                            {isLogin
+                                ? //if isLogin
+                                <Button primary onClick={() => signOut()} > Çıkış Yap </Button>
+                                : //else
+                                <Button primary onClick={() => signIn()}> Giriş Yap </Button>
                             }
                         </Menu.Item>
-                        <Menu.Item>
-                            <Button primary>Kayıt Ol</Button>
-                        </Menu.Item>
+
+                        {!isLogin && //isLogin değilse
+                            <Fragment>
+                                <Menu.Item>
+                                    <Button primary onClick={() => registerCandidate()}>Kayıt Ol</Button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                    <Button primary onClick={() => registerEmployer()}>İşveren Kaydı</Button>
+                                </Menu.Item>
+                            </Fragment>
+                        }
+
                     </Menu.Menu>
+
                 </Container>
             </Menu>
         </div>

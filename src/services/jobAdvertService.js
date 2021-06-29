@@ -10,7 +10,6 @@ export default class JobAdvertService{
     }
 
      add(values){
-         console.log(values)
         return axios.post("http://localhost:8080/api/jobAdverts/add",values)
     }
 }
