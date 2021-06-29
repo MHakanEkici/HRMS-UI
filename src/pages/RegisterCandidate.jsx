@@ -115,7 +115,7 @@ export default function RegisterCandidate() {
                                     />
                                 </Form.Field>
                             </Form.Group>
-                            <Form.Field width={5}> {/*Javada tipi LocalDate orada yıl ay gün alıyor, bizde gün ay yıl yazıyor */}
+                            <Form.Field width={5}> 
                                 <label htmlFor="birthDate">Doğum Tarihi</label> 
                                 <Input
                                     id="birthDate"
