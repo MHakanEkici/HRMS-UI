@@ -8,4 +8,9 @@ export default class EmployerService{
      registerEmployer(values){
         return axios.post("http://localhost:8080/api/users/register/employer",values)
     }
+
+    logInEmployer(values){
+        return axios.post("http://localhost:8080/api/users/logIn/employer",values)
+    }
+
 }

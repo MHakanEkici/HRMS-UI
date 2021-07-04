@@ -44,7 +44,7 @@ export default function RegisterEmployer() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="companyName">Şirket İsmi</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="companyName"
                                         name="companyName"
                                         type="text"
@@ -55,7 +55,7 @@ export default function RegisterEmployer() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="webAdress">Web Adresi</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="webAdress"
                                         name="webAdress"
                                         type="text"
@@ -68,7 +68,7 @@ export default function RegisterEmployer() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="email">E-Posta Adresi</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="email"
                                         name="email"
                                         type="text"
@@ -79,7 +79,7 @@ export default function RegisterEmployer() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="phoneNumber">Telefon No</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="phoneNumber"
                                         name="phoneNumber"
                                         type="text"
@@ -92,10 +92,10 @@ export default function RegisterEmployer() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="password">Parola</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="password"
                                         name="password"
-                                        type="text"
+                                        type="password"
                                         onChange={formik.handleChange}
                                         value={formik.values.password}
                                         placeholder='Parolanız'
@@ -103,10 +103,10 @@ export default function RegisterEmployer() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="confirmPassword">Parolanızı Doğrulayın</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="confirmPassword"
                                         name="confirmPassword"
-                                        type="text"
+                                        type="password"
                                         onChange={formik.handleChange}
                                         value={formik.values.confirmPassword}
                                         placeholder='Parolanız'

@@ -176,7 +176,7 @@ export default function JobAdvertCreate() {
                         <Form.Group widths='equal'>
                             <Form.Field>
                                 <label htmlFor="salary">Maaş</label>
-                                <TextArea rows={1}
+                                <Input
                                     id="salary"
                                     name="salary"
                                     type="text"
@@ -187,7 +187,7 @@ export default function JobAdvertCreate() {
                             </Form.Field>
                             <Form.Field>
                                 <label htmlFor="openPositionCount">Açık Pozisyon Sayısı</label>
-                                <TextArea rows={1}
+                                <Input
                                     id="openPositionCount"
                                     name="openPositionCount"
                                     type="text"

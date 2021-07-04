@@ -4,4 +4,8 @@ export default class PictureService{
      getPictures(){
          return axios.get("http://localhost:8080/api/pictures/getAll")
      }
+
+     uploadPicture() {
+        return axios.get("http://localhost:8080/api/pictures/upload")
+     }
 }

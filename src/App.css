@@ -5,3 +5,49 @@
 .ui.main.container{
   margin-top: 3em;
 }
+
+
+.cv-left-bar-header{
+  /* color: #fff; */
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-size: 17px;
+  font-weight: bold;
+
+}
+
+.cv-profile-img{
+  border-radius: 50px;
+  margin:auto;
+  object-fit: cover;
+  border: 2px solid white;
+}
+.cv-left{
+  /* background-color: #537fb4; */
+  padding: 15px;
+  /* color: white; */
+  /* border-radius: 15px 0 0 15px; */
+  margin: auto;
+  height: 100%;
+}
+
+.cv-right{
+  text-align: left;
+  border-radius: 0 15px 15px 0;
+}
+
+.cv-right-header{
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+.cv-right-grey-text{
+  /* color: #a5a5a5; */
+  margin-right: 10px;
+}
+
+.candidate-profile-header{
+  margin-top: 10px;
+  font-size: 15px;
+  /* color: #c0c0c0; */
+}

@@ -4,13 +4,19 @@ import { Header, Icon, Table, Button, Grid, Card } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector } from 'react-redux'
+import { useHistory } from 'react-router'
 import JobAdvertService from "../services/jobAdvertService";
 
 export default function JobAdvertDetail() {
+ 
   let { id } = useParams();
 
+  const history = useHistory()
+
+  //State sayfa içinde oluşturulan, sayfa içinde kullanılan değişkenler
   const [jobAdvert, setJobAdvert] = useState({})
 
+  //useSelcetor ile redux store da yer alan değişkenlere erişilir. Bunlar uygulama hafızasında tutulur:
   const { isLogin, isEmployer } = useSelector(state => state.globalReducer)
 
   useEffect(() => {
@@ -26,7 +32,7 @@ export default function JobAdvertDetail() {
       toast.success("İlana başvuru yapıldı")
     }
     else {
-      //TODO kayıt olma sayfasına yönlendirilecek
+      history.push("/login")
     }
   }
 

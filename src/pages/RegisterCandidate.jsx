@@ -1,11 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import CandidateService from '../services/candidateService';
 import { useFormik } from 'formik';
-import { Button, Dropdown, Input, TextArea, Card, Form, Grid } from "semantic-ui-react"
+import { Button, Input, TextArea, Card, Form } from "semantic-ui-react"
+import { useHistory } from 'react-router'
+import { toast } from 'react-toastify';
 
 export default function RegisterCandidate() {
 
     let candidateService = new CandidateService()
+
+    const history = useHistory()
 
     const formik = useFormik({
         initialValues: {
@@ -13,7 +17,7 @@ export default function RegisterCandidate() {
             confirmPassword: "",
             email: "",
             firstName: "",
-            identityNumber: 0,
+            identityNumber: null,
             lastName: "",
             password: ""
         },
@@ -29,9 +33,21 @@ export default function RegisterCandidate() {
                 password: values.password
             }
 
-            candidateService.registerCandidate(request).then((result) => console.log(result));
-            // Servisi entegre et
-            // jobAdvertService.add(request).then((result) => { console.log(result) //burada dispatch ile ilgili action type çağrılır. });
+            candidateService.registerCandidate(request).then((result) => {
+                console.log(result.data.success)
+              
+                if(result !== null && result.data.success){
+                    toast.success("Kayıt başarılı")                    
+                    history.push("/login")
+                } else {
+                    if(result !== null){
+                        toast.error(result.data.message)
+                    }else{
+                        toast.error("Bilinmeyen bir hata alındı")
+                    }                        
+                }    
+            });
+             //burada dispatch ile ilgili action type çağrılır. });
 
         }
     });
@@ -46,7 +62,7 @@ export default function RegisterCandidate() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="firstName">İsim</label>
-                                    <TextArea rows={1}
+                                    <Input 
                                         id="firstName"
                                         name="firstName"
                                         type="text"
@@ -57,7 +73,7 @@ export default function RegisterCandidate() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="lastName">Soy İsim</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="lastName"
                                         name="lastName"
                                         type="text"
@@ -70,7 +86,7 @@ export default function RegisterCandidate() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="email">E-Posta Adresi</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="email"
                                         name="email"
                                         type="text"
@@ -81,7 +97,7 @@ export default function RegisterCandidate() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="identityNumber">T.C. Kimlik No</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="identityNumber"
                                         name="identityNumber"
                                         type="text"
@@ -94,10 +110,10 @@ export default function RegisterCandidate() {
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label htmlFor="password">Parola</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="password"
                                         name="password"
-                                        type="text"
+                                        type="password"
                                         onChange={formik.handleChange}
                                         value={formik.values.password}
                                         placeholder='Parolanız'
@@ -105,17 +121,20 @@ export default function RegisterCandidate() {
                                 </Form.Field>
                                 <Form.Field>
                                     <label htmlFor="confirmPassword">Parolanızı Doğrulayın</label>
-                                    <TextArea rows={1}
+                                    <Input
                                         id="confirmPassword"
                                         name="confirmPassword"
-                                        type="text"
+                                        type="password"
                                         onChange={formik.handleChange}
                                         value={formik.values.confirmPassword}
                                         placeholder='Parolanız'
                                     />
                                 </Form.Field>
                             </Form.Group>
-                            <Form.Field width={5}> 
+                            <Form.Field 
+                                width={5}
+                                style={{ margin: "0 auto", marginBottom: "15px"}}
+                            > 
                                 <label htmlFor="birthDate">Doğum Tarihi</label> 
                                 <Input
                                     id="birthDate"
