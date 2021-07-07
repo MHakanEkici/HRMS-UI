@@ -9,7 +9,7 @@ export const isAdmin = false
  //Ben şimdilik elle dolduruyorum. Sen bunu CV page de useSelector ile çekip içindeki değerleri alacaksın ve ilgili yerlerde göstereceksin
  //Sen bu candidate değişkenine useSelector ile erişebilirsin 
 
-export const Candidate = {
+export const candidate = {
       "userId": 93,
       "email": "ayse@gmail.com",
       "password": "654321",

@@ -9,6 +9,7 @@ import Login from '../pages/Login'
 import RegisterCandidate from '../pages/RegisterCandidate';
 import RegisterEmployer from '../pages/RegisterEmployer';
 import CandidateProfile from '../pages/CandidateProfile';
+import CreateCandidateProfile from '../pages/CreateCandidateProfile';
 
 export default function Dashboard() {
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
                         <Route exact path="/jobAdvertCreate" component={JobAdvertCreate} /> 
                         <Route exact path="/jobAdvert/:id" component={JobAdvertDetail} />
                         <Route exact path="/candidateProfile/:id" component={CandidateProfile} />
+                        <Route exact path="/candidateProfileCreate" component={CreateCandidateProfile} />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

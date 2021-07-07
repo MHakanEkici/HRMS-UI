@@ -3,7 +3,7 @@ import JobAdvertService from '../services/jobAdvertService'
 import { Link } from 'react-router-dom'
 import { Icon, Label, Menu, Table, Card } from 'semantic-ui-react'
 // import { addToCart } from '../store/actions/cartActions'
-import { useSelector } from 'react-redux'
+
 import { toast } from "react-toastify";
 import { useDispatch } from 'react-redux'
 import { Fragment } from 'react'

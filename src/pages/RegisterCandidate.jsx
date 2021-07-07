@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import CandidateService from '../services/candidateService';
 import { useFormik } from 'formik';
-import { Button, Input, TextArea, Card, Form } from "semantic-ui-react"
+import { Button, Input, Card, Form } from "semantic-ui-react"
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify';
 

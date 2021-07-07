@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { useParams } from "react-router";
 import { Link } from 'react-router-dom'
+import { toast } from "react-toastify";
+import { useHistory } from 'react-router';
 import { Grid, Image, Icon, List, Divider, TextArea, Input, Modal, Button, Header, Card, GridColumn, } from "semantic-ui-react";
 import CurriculumVitaeService from '../services/curriculumVitaeService';
+import CandidateService from '../services/candidateService';
 
 export default function CandidateProfile() {
     let { id } = useParams(); //userId mi olması gerek ?
 
+    const history = useHistory()
+    
+    const [candidate, setCandidate] = useState({})
     const [curriculumVitae, setcurriculumVitae] = useState({})
     const cardStyle = {
         width: "100%",
@@ -18,10 +24,29 @@ export default function CandidateProfile() {
 
     useEffect(() => {
         let curriculumVitaeService = new CurriculumVitaeService()
-        curriculumVitaeService.getByUserId(id).then(result => {
-            console.log(result)
-            setcurriculumVitae(result.data.data)
+        let candidateService = new CandidateService()
+
+        candidateService.getCandidateById(id).then(result => {
+            if(!result.data.success) {
+                toast.error(result.data.message)
+            }else{ //Servis cagrimi basarili ise               
+                setCandidate(result.data.data)                  
+                              
+            }    
+        })   
+
+        curriculumVitaeService.getByUserId(id).then(result => {           
+            if(!result.data.success) {
+                toast.error(result.data.message)
+            }else{ //Servis cagrimi basarili ise
+                if(result.data.data !== undefined && result.data.data !== null){ //CV kaydi varsa
+                   setcurriculumVitae(result.data.data)                   
+                }else{                  
+                    history.push("/candidateProfileCreate")
+                }               
+            }           
         })
+
     }, []);
 
 
@@ -46,7 +71,7 @@ export default function CandidateProfile() {
                 />
                 <Image
                     className="cv-profile-img"
-                    src={curriculumVitae.pictures !== undefined ? curriculumVitae.pictures[0].pictureUrl : ""}
+                    src={curriculumVitae.pictures !== undefined ? curriculumVitae.pictures[0].pictureUrl : "https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1"}
                     size="small"
                     style={{
                         width: "150px",
@@ -63,8 +88,8 @@ export default function CandidateProfile() {
 
             </div>
             <div style={{ marginTop: "60px", marginLeft: "28px", fontSize: "25px", float: "left" }}>
-                {curriculumVitae.candidate?.firstName}{" "}
-                {curriculumVitae.candidate?.lastName}
+                {candidate?.firstName}{" "}
+                {candidate?.lastName}
             </div>
             <div
                 style={{
@@ -100,7 +125,7 @@ export default function CandidateProfile() {
                                             <span
                                             // style={{ color: "#d4d4d4" }}
                                             >
-                                                {curriculumVitae.candidate?.email}
+                                                {candidate?.email}
                                             </span>
                                         </div>
                                         <div>
@@ -111,7 +136,7 @@ export default function CandidateProfile() {
                                                 <span
                                                 // style={{ color: "#d4d4d4" }}
                                                 >
-                                                    {curriculumVitae.candidate?.birthDate}
+                                                    {candidate?.birthDate}
                                                 </span>
                                             </div>
                                         </div>
@@ -158,7 +183,7 @@ export default function CandidateProfile() {
                             >
                                 <Card.Content header="Ön Yazı" className="cv-left-bar-header" />
                                 <Card.Content>
-                                    {curriculumVitae?.coverLetter}
+                                    {curriculumVitae.coverLetter !== undefined ? curriculumVitae.coverLetter : "-----"}
                                 </Card.Content>
                             </GridColumn>
                         </Grid.Row>
@@ -327,7 +352,7 @@ export default function CandidateProfile() {
                                                     marginBottom: "7px",
                                                 }}>
                                                     <span>
-                                                        Başlangıç
+                                                        Bitiş
                                                     </span>
                                                 </div>
                                                 <div>
