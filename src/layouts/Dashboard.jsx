@@ -30,7 +30,7 @@ export default function Dashboard() {
                         <Route exact path="/" component={JobAdvertList} />
                         <Route exact path="/login" component={Login} />                       
                         <Route exact path="/register/candidate" component={RegisterCandidate} />
-                        <Route exact path="/register/employer" component={RegisterEmployer} />                        
+                        <Route exact path="/register/employer" component={RegisterEmployer} />                           
                         <Route exact path="/jobAdvertCreate" component={JobAdvertCreate} /> 
                         <Route exact path="/jobAdvert/:id" component={JobAdvertDetail} />
                         <Route exact path="/candidateProfile/:id" component={CandidateProfile} />

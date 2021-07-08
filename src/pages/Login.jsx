@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form, Grid, Header, Image, Message, Segment, Radio, TextArea, Input } from 'semantic-ui-react'
 import { useFormik } from 'formik';
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router'
 import CandidateService from '../services/candidateService';
 import EmployerService from '../services/employerService';
 import { toast } from 'react-toastify';
+import { signIn } from '../store/actions/globalActions'
 
 export default function Login() {
 
     let candidateService = new CandidateService();
     let employerService = new EmployerService();
 
-    const [userType, setUserType] = useState('')
+    const dispatch = useDispatch()
+    const history = useHistory()
 
-    const signIn = () => {
-
-        //login sayfasında servisini çağır
-        //sonra then kısmında gelen result isSuccess ise  dispatch(signIn(result)); çağır
-
-    }
+    const [userType, setUserType] = useState('') 
 
     const handleChange = (e, { value }) => {
         setUserType(value)
@@ -25,8 +24,12 @@ export default function Login() {
 
     const handleResult = (result) => {
         if(result !== null && result.data.success){
-            toast.success("Giriş başarılı")            
-            // TODO burada dispatch ile ilgili action type çağrılır.
+            dispatch(signIn(result)); 
+            
+            toast.success("Giriş başarılı") 
+             
+            history.push("/")
+           
         } else {
             if(result !== null){
                 toast.error(result.data.message)
@@ -121,8 +124,7 @@ export default function Login() {
                             <Button 
                                 color='teal' 
                                 fluid 
-                                size='large'
-                                onClick={() => signIn()} 
+                                size='large'                              
                                 type="submit"
                             >
                                 Giriş yap

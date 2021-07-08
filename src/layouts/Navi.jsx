@@ -3,13 +3,16 @@ import { Button, Container, Menu, Dropdown, Header } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router'
+import { useDispatch } from 'react-redux'
 import { toast } from "react-toastify";
+import { signOut } from '../store/actions/globalActions'
 
 export default function Navi() {
 
-    const { isLogin, isEmployer } = useSelector(state => state.globalReducer)
+    const { isLogin, isEmployer, isCandidate, candidate, employer } = useSelector(state => state.globalReducer)
 
     const history = useHistory()
+    const dispatch = useDispatch()
 
     const options = [
         {
@@ -38,15 +41,12 @@ export default function Navi() {
         }
     ];
 
-    const signIn = (value, fieldName) => {
-        // Login sayfasına yönlendir "/login"
-
-        //login sayfasında servisini çağır
-        //sonra then kısmında gelen result isSuccess ise  dispatch(signIn(result)); çağır
+    const goToLoginPage = (value, fieldName) => {
         history.push("/login")
     }
 
-    const signOut = () => {
+    const callSignOut = () => {
+        dispatch(signOut());
         toast.success("Çıkış yapıldı")
         history.push("/") //anasayfaya yani / pathine yönlendir.     
     }
@@ -88,6 +88,21 @@ export default function Navi() {
                         </Link>
                     }
 
+                    {isCandidate &&
+                        <Fragment>
+                            <Menu.Item>
+                                Hoşgeldin {candidate.firstName + " " + candidate.lastName }
+                            </Menu.Item>                            
+                        </Fragment>
+                    }
+                    {isEmployer &&
+                        <Fragment>
+                            <Menu.Item>
+                                Hoşgeldin {employer.firstName + " " + employer.lastName }
+                            </Menu.Item>                            
+                        </Fragment>
+                    }
+
                     <Menu.Menu position='right'>
                         <Menu.Item>
                             {isLogin
@@ -97,14 +112,14 @@ export default function Navi() {
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => signOut()} > Çıkış Yap </Button>
+                                    primary onClick={() => callSignOut()} > Çıkış Yap </Button>
                                 : //else
                                 <Button style={{
                                     borderStyle: "solid",
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => signIn()}> Giriş Yap </Button>
+                                    primary onClick={() => goToLoginPage()}> Giriş Yap </Button>
 
                             }
                         </Menu.Item>
