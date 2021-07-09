@@ -22,7 +22,7 @@ export default function globalReducer(state = initialState, { type, payload }) {
               
                 candidate: payload.data.data //...state.cartItems yazarak cartItems'daki diğer elemanları değiştirmeden ekliyoruz + virgülden sonraki yeni cartItem objesini ekliyoruz
             }
-        case SIGN_OUT: debugger;
+        case SIGN_OUT: 
             return {
                 ...initialState,
             }

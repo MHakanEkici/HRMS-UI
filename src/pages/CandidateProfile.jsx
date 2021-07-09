@@ -12,7 +12,7 @@ export default function CandidateProfile() {
     let { id } = useParams(); //userId mi olması gerek ?
 
     const history = useHistory()
-    
+
     const [candidate, setCandidate] = useState({})
     const [curriculumVitae, setcurriculumVitae] = useState({})
     const cardStyle = {
@@ -27,24 +27,24 @@ export default function CandidateProfile() {
         let candidateService = new CandidateService()
 
         candidateService.getCandidateById(id).then(result => {
-            if(!result.data.success) {
+            if (!result.data.success) {
                 toast.error(result.data.message)
-            }else{ //Servis cagrimi basarili ise               
-                setCandidate(result.data.data)                  
-                              
-            }    
-        })   
+            } else { //Servis cagrimi basarili ise               
+                setCandidate(result.data.data)
 
-        curriculumVitaeService.getByUserId(id).then(result => {           
-            if(!result.data.success) {
+            }
+        })
+
+        curriculumVitaeService.getByUserId(id).then(result => {
+            if (!result.data.success) {
                 toast.error(result.data.message)
-            }else{ //Servis cagrimi basarili ise
-                if(result.data.data !== undefined && result.data.data !== null){ //CV kaydi varsa
-                   setcurriculumVitae(result.data.data)                   
-                }else{                  
+            } else { //Servis cagrimi basarili ise
+                if (result.data.data !== undefined && result.data.data !== null) { //CV kaydi varsa
+                    setcurriculumVitae(result.data.data)
+                } else {
                     history.push("/candidateProfileCreate")
-                }               
-            }           
+                }
+            }
         })
 
     }, []);
@@ -299,7 +299,12 @@ export default function CandidateProfile() {
                             <List>
                                 {curriculumVitae.schools?.map((school) => (
                                     <Grid key={school.id}>
-                                        <Grid.Row>
+                                        <Grid.Row
+                                            style={{
+                                                paddingTop: "0px",
+                                                paddingBottom: "25px",
+                                            }}
+                                        >
                                             <Grid.Column width={3}>
                                                 <div style={{
                                                     fontSize: "18px",

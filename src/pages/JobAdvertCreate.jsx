@@ -85,7 +85,7 @@ export default function JobAdvertCreate() {
                 deadline: values.deadline,
                 description: values.description,
                 employer: {
-                    userId: 84
+                    userId: 84 //TODO
                 },
                 job: {
                     jobId: values.job
@@ -108,7 +108,7 @@ export default function JobAdvertCreate() {
 
     return (
         <Fragment>
-            <Card fluid>
+            <Card fluid style={{backgroundColor: "#d1fffc"}}>
                 <Card.Content header='İş ilanı Ekle' />
                 <Card.Content>
                     <Form onSubmit={formik.handleSubmit}>
