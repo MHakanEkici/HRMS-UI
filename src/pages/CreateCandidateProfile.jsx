@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Fragment } from "react";
-import { useParams } from "react-router";
-import { Link } from 'react-router-dom'
 import { toast } from "react-toastify";
 import { useSelector } from 'react-redux'
+import { useHistory } from 'react-router'
 import { useFormik } from 'formik';
-import { Grid, Image, Icon, List, Divider, TextArea, Input, Modal, Button, Header, Card, GridColumn, Dropdown, Form } from "semantic-ui-react";
+import { Grid, Image, Icon, List, TextArea, Input, Button, Card, GridColumn, Dropdown, Form } from "semantic-ui-react";
 import CurriculumVitaeService from '../services/curriculumVitaeService';
+import PictureService from '../services/pictureService';
 
 export default function CreateCandidateProfile() {
 
     let curriculumVitaeService = new CurriculumVitaeService()
+    let pictureService = new PictureService()
+
+    const history = useHistory()
 
     const { candidate } = useSelector(state => state.globalReducer)
-    const [languageCount, setLanguageCount] = useState([{ language: '', level: '', id: 1 }])
+
+    const [image, setImage] = useState({ preview: "", raw: "" });
+    const [languageInputs, setLanguageInputs] = useState([{ language: '', level: '' }])
+    const [schoolInputs, setSchoolInputs] = useState([{ schoolName: '', department: '', schoolStartDate: '', graduationDate: '' }])
+    const [jobExperienceInputs, setJobExperienceInputs] = useState([{ workplaceName: '', position: '', startDate: '', finishDate: '' }])
 
     const levels = [
         { text: '1', value: '1' },
@@ -23,26 +30,104 @@ export default function CreateCandidateProfile() {
         { text: '5', value: '5' }
     ]
 
-    const cardStyle = {
-        width: "100%",
-        boxShadow: "22px 11px 22px rgb(230, 230, 230)",
-        backgroundColor: "#d1fffc",
-        marginTop: "40px"
+    //PICTURE UPLOAD
+
+    const onFileChange = (e) => {       
+        if (e.target.files.length) {
+            const types = ['image/png', 'image/jpeg']
+            // if (types.every(type => e.target.files[0].type !== type)) {
+            //     e.target.value = null
+            //     toast.warning("png veya jpeg türünde dosya yükleyiniz")
+            //     return;
+            // }
+            setImage({
+                preview: URL.createObjectURL(e.target.files[0]),
+                raw: e.target.files[0]
+            });
+        }
     }
 
-    const addLanguage = () => {
-        setLanguageCount([...languageCount, { language: '', level: '', id: 1 }])
+    const onFileUpload = () => {
+        const formData = new FormData();
+        formData.append(
+            "myFile",
+            image.raw,
+            image.raw.name
+        );
+        // await fetch("YOUR_URL", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "multipart/form-data"
+        //     },
+        //     body: formData
+        //   });
     }
 
-    const removeLanguage = (index) => {
-        languageCount.splice(index, 1)
-        setLanguageCount([...languageCount])
+    //LANGUAGE INPUTS
+    const addLanguageInput = () => {
+        setLanguageInputs([...languageInputs, { language: '', level: '' }])
     }
 
+    const removeLanguageInput = (index) => {
+        const list = [...languageInputs];
+        list.splice(index, 1)
+        setLanguageInputs(list)
+    }
+
+    const handleLanguageInputChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...languageInputs];
+        list[index][name] = value;
+        setLanguageInputs(list);
+    };
+
+    const handleLevelChange = (value, name, index) => {
+        const list = [...languageInputs];
+        list[index][name] = value;
+        setLanguageInputs(list);
+    }
+
+    //SCHOOL INPUTS
+    const addSchoolInput = () => {
+        setSchoolInputs([...schoolInputs, { schoolName: '', department: '', schoolStartDate: '', graduationDate: '' }])
+    }
+
+    const removeSchoolInput = (index) => {
+        const list = [...schoolInputs];
+        list.splice(index, 1)
+        setSchoolInputs(list)
+    }
+
+    const handleSchoolInputsChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...schoolInputs];
+        list[index][name] = value;
+        setSchoolInputs(list);
+    };
+
+    //JOB EXPERIENCE INPUTS
+    const addJobExperienceInput = () => {
+        setJobExperienceInputs([...jobExperienceInputs, { workplaceName: '', position: '', startDate: '', finishDate: '' }])
+    }
+
+    const removeJobExperienceInput = (index) => {
+        const list = [...jobExperienceInputs];
+        list.splice(index, 1)
+        setJobExperienceInputs(list)
+    }
+
+    const handleJobExperienceInputsChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...jobExperienceInputs];
+        list[index][name] = value;
+        setJobExperienceInputs(list);
+    };
+
+    //HANDLE RESULT
     const handleResult = (result) => {
         if (result !== null && result.data.success) {
-
             toast.success("CV başarılı bir şekilde eklendi")
+            history.push("/candidateProfile/" + candidate.userId)
         } else {
             if (result !== null) {
                 toast.error(result.data.message)
@@ -52,81 +137,63 @@ export default function CreateCandidateProfile() {
         }
     }
 
-
+    //FORMIK
     const formik = useFormik({
         initialValues: {
-            coverLetter: "",
-            languageName: "",
-            level: 0,
             githubAddress: "",
-            finishDate: "",
-            position: "",
-            startDate: "",
-            workplaceName: "",
-            knownTechnologies: "",
             linkedinAddress: "",
-            department: "",
-            graduationDate: "",
-            schoolStartDate: "",
-            userId: 0,
+            coverLetter: "",
+            knownTechnologies: "",
+            userId: candidate.userId,
         },
-
-
         onSubmit: (values) => {
 
-            const request =
-            {
-                coverLetter: values.coverLetter,
-                foreignLanguages: [
+            const formData = new FormData();
+            formData.append(
+                "multipartFile",
+                image.raw,
+                image.raw.name
+            );         
+           
+            pictureService.uploadPicture(values.userId, formData).then((result) => { debugger;
+                if (result !== null && result.data.success) {
+                    const cvRequest =
                     {
-                        languageName: "İngilizce",//values.languageName,
-                        level: 2 // values.level
-                    },
-                ],
-                githubAddress: values.githubAddress,
-                jobExperiences: [
-                    {
-                        finishDate: values.finishDate,
-                        position: values.position,
-                        startDate: values.jobStartDate,
-                        workplaceName: values.workplaceName
+                        githubAddress: values.githubAddress,
+                        linkedinAddress: values.linkedinAddress,
+                        coverLetter: values.coverLetter,
+                        jobExperiences: jobExperienceInputs,
+                        schools: schoolInputs,
+                        foreignLanguages: languageInputs,
+                        knownTechnologies: values.knownTechnologies,
+                        userId: values.userId
                     }
-                ],
-                knownTechnologies: values.knownTechnologies,
-                linkedinAddress: values.linkedinAddress,
-                schools: [
-                    {
-                        department: values.department,
-                        graduationDate: values.graduationDate,
-                        schoolName: values.schoolName,
-                        startDate: values.schoolStartDate
+                    debugger;
+                    // curriculumVitaeService.add(cvRequest).then((result) => {
+                    //     handleResult(result)
+                    // });
+                } else {
+                    if (result !== null) {
+                        toast.error(result.data.message)
+                    } else {
+                        toast.error("Bilinmeyen bir hata alındı")
                     }
-                ],
-                pictures: [
-                    {
-                        pictureName: values.pictureName,
-                        pictureUrl: values.pictureUrl,
-                        pictureId: values.pictureId
-                    }
-                ],
-                userId: 93 // TODO candidate.userId
-            }
-
-            curriculumVitaeService.add(request).then((result) => {
-                console.log(result)
-                handleResult(result)
+                }
             });
-        },
+
+
+        }
     });
 
-    const handleChangeSemantic = (value, fieldName) => {
-        console.log(value)
-        formik.setFieldValue(fieldName, value)
+    //STYLE
+    const cardStyle = {
+        width: "100%",
+        boxShadow: "22px 11px 22px rgb(230, 230, 230)",
+        backgroundColor: "#d1fffc",
+        marginTop: "40px"
     }
 
-
     return (
-
         <Fragment>
 
             <div style={{ height: '300px' }}>
@@ -142,11 +209,11 @@ export default function CreateCandidateProfile() {
                         borderWidth: "thick",
                         borderColor: "black"
                     }}
-
                 />
                 <Image
                     className="cv-profile-img"
-                    src={"https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1"}
+                    src={image.preview ? image.preview : "https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1"}
+                    alt="dummy"
                     size="small"
                     style={{
                         width: "150px",
@@ -160,6 +227,43 @@ export default function CreateCandidateProfile() {
                         borderWidth: "thick",
                     }}
                 />
+
+                <div              
+                    style={{
+                        position: "absolute",
+                        marginTop: "200px", //245px
+                        marginLeft: "120px", //50px
+                        paddingTop: "10px",
+                        paddingLeft: "3px",
+                        fontSize: "30px",
+                        backgroundColor: "white",
+                        borderRadius: "50%",
+                        borderStyle: "solid",
+                        borderColor: "black",
+                        borderWidth: "medium"
+                    }}
+                >
+                    <input
+                        id="uploadButton"
+                        type="file"
+                        accept="image/*"
+                        onChange={e => onFileChange(e)}
+                        style={{ display: "none" }}
+                    />
+                    <label htmlFor="uploadButton">
+                        <Icon name= {image.preview ? "edit" : "camera"} />
+                        {/* <div
+                            style={{
+                                marginTop: "7px",
+                                fontSize: "12px",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            Resim Yüklemek<br></br> İçin Tıklayınız
+                        </div> */}
+                    </label>
+                </div>
+
             </div>
 
             <div style={{ marginTop: "60px", marginLeft: "28px", fontSize: "25px", float: "left" }}>
@@ -167,394 +271,161 @@ export default function CreateCandidateProfile() {
                 {candidate?.lastName}
             </div>
 
-            <div
-                style={{
-                    marginTop: "90px"
-                }}
-            > <Form onSubmit={formik.handleSubmit}>
+            <div style={{ marginTop: "90px" }}>
+                <Form onSubmit={formik.handleSubmit}>
+
                     <Card style={cardStyle} >
-                        <Grid style={{ width: "100%" }} >
+                        <Grid style={{ width: "100%", marginTop: "-10px", marginBottom: "10px" }} >
                             <Grid.Row>
-                                <Grid.Column
-                                    width={4}
-                                    style={{ paddingRight: "0px", height: "100%", paddingLeft: "0" }}
-                                >
-                                    <div className="cv-left">
-                                        <div
-                                            style={{
-                                                textAlign: "left",
-                                                marginLeft: "28px",
-                                            }}
-                                        >
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="at" /> Email
-                                            </div>
-                                            <span
-                                            // style={{ color: "#d4d4d4" }}
-                                            >
-                                                {candidate?.email}
-                                            </span>
+
+                                <Grid.Column width={6} >
+                                    <div style={{ textAlign: "left", marginLeft: "28px" }} >
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="at" /> Email
+                                        </div>
+                                        {candidate?.email}
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="table" /> Doğum Tarihi
+                                        </div>
+                                        {candidate?.birthDate}
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="thumbtack" /> Linkler
+                                        </div>
 
 
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="table" /> Doğum Tarihi
-                                            </div>
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="thumbtack" /> Linkler
-                                            </div>
-                                            <div style={{ marginBottom: "10px" }}>
-                                                <div>
-                                                    <label htmlFor="githubAddress">GitHub:</label>
-                                                </div>
-                                                <div>
-                                                    <Input
-                                                        id="githubAddress"
-                                                        name="githubAddress"
-                                                        type="text"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.githubAddress}
-                                                        placeholder='GitHub Adresiniz'
-                                                    />
-                                                </div>
-                                                <div style={{ marginTop: "8px" }}>
-                                                    <label htmlFor="linkedinAddress">Linkedin:</label>
-                                                </div>
-                                                <div>
-                                                    <Input
-                                                        id="linkedinAddress"
-                                                        name="linkedinAddress"
-                                                        type="text"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.linkedinAddress}
-                                                        placeholder='Linkedin Adresiniz'
-                                                    />
-                                                </div>
-                                            </div>
+                                        <div style={{ marginBottom: "10px" }}>
+                                            <label htmlFor="githubAddress" style={{ fontSize: "16px" }}>GitHub:</label>
+                                            <Input
+                                                id="githubAddress"
+                                                name="githubAddress"
+                                                type="text"
+                                                onChange={formik.handleChange}
+                                                value={formik.values.githubAddress}
+                                                placeholder='GitHub Adresiniz'
+                                                style={{ marginLeft: "18px" }}
+                                            />
+                                        </div>
+
+                                        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+                                            <label htmlFor="linkedinAddress" style={{ fontSize: "16px" }}>Linkedin:</label>
+                                            <Input
+                                                id="linkedinAddress"
+                                                name="linkedinAddress"
+                                                type="text"
+                                                onChange={formik.handleChange}
+                                                value={formik.values.linkedinAddress}
+                                                placeholder='Linkedin Adresiniz'
+                                                style={{ marginLeft: "10px" }}
+                                            />
                                         </div>
                                     </div>
                                 </Grid.Column>
 
-                                <GridColumn
-                                    width={12}
-                                    style={{ marginTop: "15px", paddingRight: "0px", height: "100%", paddingLeft: "0" }}
-                                >
-                                    <Card.Content header="Ön Yazı" className="cv-left-bar-header" />
-                                    <Card.Content>
-                                        <TextArea
-                                            style={{ width: "100%" }}
-                                            rows={11}
-                                            id="coverLetter"
-                                            name="coverLetter"
-                                            type="text"
-                                            onChange={formik.handleChange}
-                                            value={formik.values.coverLetter}
-                                            placeholder='Ön Yazı Giriniz'
-                                        />
-                                    </Card.Content>
+                                <GridColumn width={10} style={{ paddingRight: "20px", height: "100%", paddingLeft: "0" }} >
+                                    <div className="cv-left-bar-header">
+                                        Ön Yazı
+                                    </div>
+                                    <TextArea
+                                        style={{ width: "100%", marginTop: "10px" }}
+                                        rows={10}
+                                        id="coverLetter"
+                                        name="coverLetter"
+                                        type="text"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.coverLetter}
+                                        placeholder='Ön Yazı Giriniz'
+                                    />
                                 </GridColumn>
                             </Grid.Row>
                         </Grid>
                     </Card>
 
-                    <Card
-                        style={cardStyle}
-                    >
-                        <div className="job-experiences" style={{ marginLeft: "15px" }}>
-                            <div className="cv-right-header">
-                                <Icon name="briefcase" /> <b>İş Deneyimleri</b>
-                            </div>
-
-                            <Grid style={{ marginTop: "35px" }}>
-                                <Grid.Row
-                                    style={{
-                                        paddingTop: "0px",
-                                        paddingBottom: "25px",
-                                    }}
-                                >
-                                    <Grid.Column width={6}>
-                                        <div style={{ fontSize: "16px" }}>
-                                            <div>
-                                                <label htmlFor="startDate">İşe Başlama Tarihi: </label>
-                                            </div>
-                                            <div style={{ marginTop: "3px" }}>
-                                                <Input
-                                                    id="startDate"
-                                                    name="startDate"
-                                                    type="date"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.startDate}
-                                                    placeholder='İşe Başlama Tarihiniz'
-                                                />
-                                            </div>
-                                            <div style={{ marginTop: "10px" }}>
-                                                <label htmlFor="finishDate">İşten Ayrılma Tarihi: </label>
-                                            </div>
-                                            <div style={{ marginTop: "3px" }}>
-                                                <Input
-                                                    id="finishDate"
-                                                    name="finishDate"
-                                                    type="date"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.finishDate}
-                                                    placeholder='İşten Ayrılma Tarihiniz'
-                                                />
-                                            </div>
-                                        </div>
-                                    </Grid.Column>
-                                    <Grid.Column width={5}>
-                                        <div style={{ textAlign: "center" }}>
-                                            <div
-                                                style={{
-                                                    fontSize: "18px",
-                                                    marginBottom: "7px",
-                                                }}
-                                            >
-                                                İş Yeri Adı
-                                            </div>
-                                            <span className="cv-right-grey-text">
-                                                <Input
-                                                    id="workplaceName"
-                                                    name="workplaceName"
-                                                    type="text"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.workplaceName}
-                                                    placeholder='İş Yeri Adını Giriniz'
-                                                />
-                                            </span>
-                                        </div>
-                                    </Grid.Column>
-                                    <Grid.Column width={5}>
-                                        <div style={{ textAlign: "center" }}>
-                                            <div
-                                                style={{
-                                                    fontSize: "18px",
-                                                    marginBottom: "7px",
-                                                }}
-                                            >
-                                                Pozisyon
-                                            </div>
-                                            <span className="cv-right-grey-text">
-                                                <Input
-                                                    id="position"
-                                                    name="position"
-                                                    type="text"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.position}
-                                                    placeholder='Çalıştığınız Pozisyon'
-                                                />
-                                            </span>
-                                        </div>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
+                    <Card style={cardStyle} >
+                        <div className="cv-card-header">
+                            <Icon name="briefcase" /> <b>İş Deneyimleri</b>
                         </div>
-                    </Card>
-
-                    {/* <Divider style={{ marginLeft: "0px" }} /> */}
-
-                    <Card
-                        style={cardStyle}
-                    >
-                        <div className="educations" style={{ marginLeft: "15px" }}>
-                            <div className="cv-right-header">
-                                <Icon name="building" /> <b>Eğitim</b>
-                            </div>
-                            <div style={{ marginTop: "20px" }}>
-
-                                <Grid >
-                                    <Grid.Row
-                                        style={{
-                                            paddingTop: "0px",
-                                            paddingBottom: "25px",
-                                        }}
-                                    >
-                                        <Grid.Column width={3}>
-                                            <div style={{
-                                                fontSize: "18px",
-                                                marginBottom: "7px",
-                                            }}>
-                                                <Icon name="graduation cap" />
-                                                <span>
-                                                    Okul
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="cv-right-grey-text">
-                                                    <Input
-                                                        id="schoolName"
-                                                        name="schoolName"
-                                                        type="text"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.schoolName}
-                                                        placeholder='Okul Adını Giriniz'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </Grid.Column>
-                                        <Grid.Column width={5}>
-                                            <div style={{
-                                                fontSize: "18px",
-                                                marginBottom: "7px",
-                                            }}>
-                                                <span>
-                                                    Bölüm
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="cv-right-grey-text">
-                                                    <Input
-                                                        id="department"
-                                                        name="department"
-                                                        type="text"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.department}
-                                                        placeholder='Okuduğunuz Bölüm'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </Grid.Column>
-                                        <Grid.Column width={3}>
-                                            <div style={{
-                                                fontSize: "18px",
-                                                marginBottom: "7px",
-                                            }}>
-                                                <span>
-                                                    Başlangıç
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="cv-right-grey-text">
-                                                    <Input
-                                                        id="schoolStartDate"
-                                                        name="schoolStartDate"
-                                                        type="date"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.schoolStartDate}
-                                                        placeholder='Okula Başladığınız Tarih'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </Grid.Column>
-                                        <Grid.Column width={5}>
-                                            <div style={{
-                                                fontSize: "18px",
-                                                marginBottom: "7px",
-                                            }}>
-                                                <span>
-                                                    Bitiş
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="cv-right-grey-text">
-                                                    <Input
-                                                        id="graduationDate"
-                                                        name="graduationDate"
-                                                        type="date"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.graduationDate}
-                                                        placeholder='Mezuniyet Tarihi'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* <Divider style={{ marginLeft: "0px" }} /> */}
-
-                    <Card
-                        style={cardStyle}
-                    >
-                        <div
-                            className="skills"
-                            style={{ marginLeft: "15px", marginRight: "15px", marginBottom: "25px" }}
-                        >
-                            <div className="cv-right-header">
-                                <Icon name="pencil" /> <b>Yetenekler</b>
-                            </div>
-                            <div style={{ marginTop: "10px", margin: "0 auto" }}>
-                                <TextArea rows={5} style={{ width: "100%" }}
-                                    id="knownTechnologies"
-                                    name="knownTechnologies"
-                                    type="text"
-                                    onChange={formik.handleChange}
-                                    value={formik.values.knownTechnologies}
-                                    placeholder='Bildiğiniz Teknolojileri Yazınız'
-                                />
-                            </div>
-                        </div>
-                    </Card>
-                    {/* <Divider style={{ marginLeft: "0px" }} /> */}
-                    <Card
-                        style={cardStyle}
-                    >
-                        <div
-                            className="languages"
-                            style={{ marginLeft: "15px", marginBottom: "25px" }}
-                        >
-                            <div className="cv-right-header">
-                                <Icon name="language" /> <b>Diller</b>
-                            </div>
-
-                            <List style={{ marginTop: "20px" }}>
+                        <div style={{ marginBottom: "20px", marginTop: "5px" }}>
+                            <List style={{ marginBottom: "15px" }}>
                                 {
-                                    languageCount.map((item, index) => (
+                                    jobExperienceInputs.map((item, index) => (
                                         <Fragment>
                                             <List.Item>
-                                                <Grid>
-                                                    <Grid.Row style={{ display: "block" }}>
-                                                        <GridColumn style={{ width: "auto" }}>
-                                                            <div style={{
-                                                                fontSize: "18px",
-                                                                marginBottom: "7px",
-                                                            }}>
-                                                                <Icon name="comment alternate" />
-                                                                <span>
-                                                                    Dil:
-                                                                </span>
+                                                <Grid style={{ marginTop: "10px", marginBottom: "0px" }}>
+                                                    {/* <Grid style={{ marginTop: "5px", marginBottom: "10px" }}> */}
+                                                    <Grid.Row style={{ padding: "0px", display: "block" }}>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                İş Yeri Adı
                                                             </div>
                                                             <Input
-                                                                id="index"
-                                                                name={`item.${index}.languge`}
+                                                                id="workplaceName"
+                                                                name="workplaceName"
                                                                 type="text"
-                                                                onChange={formik.handleChange}
-                                                                value={formik.values.languageName + index}
-                                                                placeholder='Dil Adını Giriniz'
+                                                                onChange={e => handleJobExperienceInputsChange(e, index)}
+                                                                value={item.workplaceName}
+                                                                placeholder='İş Yeri Adını Giriniz'
                                                             />
-                                                        </GridColumn>
+                                                        </Grid.Column>
 
-                                                        <GridColumn style={{ width: "auto" }}>
-                                                            <div style={{ marginTop: "10px", fontSize: "15px" }}>
-                                                                <label>Seviye:</label>
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                Pozisyon
                                                             </div>
-                                                            <div>
-                                                                <Dropdown
-                                                                    search
-                                                                    selection
-                                                                    onChange={(event, data) =>
-                                                                        handleChangeSemantic(data.value, data.name)
-                                                                    }
-                                                                    name='level'
-                                                                    value={formik.values.level}
-                                                                    options={levels}
-                                                                    placeholder='(5 Çok İyi - 1 Çok Az)'
-                                                                />
+                                                            <Input
+                                                                id="position"
+                                                                name="position"
+                                                                type="text"
+                                                                onChange={e => handleJobExperienceInputsChange(e, index)}
+                                                                value={item.position}
+                                                                placeholder='Çalıştığınız Pozisyon'
+                                                            />
+                                                        </Grid.Column>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                İşe Başlama Tarihi:
                                                             </div>
-                                                        </GridColumn>
+                                                            <Input
+                                                                id="startDate"
+                                                                name="startDate"
+                                                                type="date"
+                                                                onChange={e => handleJobExperienceInputsChange(e, index)}
+                                                                value={item.startDate}
+                                                                placeholder='İşe Başlama Tarihiniz'
+                                                            />
+                                                        </Grid.Column>
 
-                                                        <GridColumn style={{ width: "auto", marginTop: "27px" }}>
-                                                            <Button
-                                                                icon
-                                                                primary
-                                                                onClick={() => removeLanguage(index)}
-                                                            >
-                                                                <Icon name='delete' />
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                İşten Ayrılma Tarihi:
+                                                            </div>
+                                                            <Input
+                                                                id="finishDate"
+                                                                name="finishDate"
+                                                                type="date"
+                                                                onChange={e => handleJobExperienceInputsChange(e, index)}
+                                                                value={item.finishDate}
+                                                                placeholder='İşten Ayrılma Tarihiniz'
+                                                            />
+                                                        </Grid.Column>
 
-                                                            </Button>
-                                                        </GridColumn>
+                                                        {index !== 0 &&
+                                                            <GridColumn style={{ width: "auto", marginTop: "27px" }}>
+                                                                <Button
+                                                                    icon
+                                                                    primary
+                                                                    onClick={() => removeJobExperienceInput(index)}
+                                                                    type="button"
+                                                                >
+                                                                    <Icon name="delete" />
+                                                                </Button>
+                                                            </GridColumn>
+                                                        }
+                                                        {index === 0 && jobExperienceInputs.length > 1 &&
+                                                            <GridColumn></GridColumn>
+                                                        }
+
                                                     </Grid.Row>
                                                 </Grid>
                                             </List.Item>
@@ -565,13 +436,224 @@ export default function CreateCandidateProfile() {
                             <Button
                                 icon
                                 primary
-                                onClick={() => addLanguage()}
+                                onClick={() => addJobExperienceInput()}
+                                type="button"
                             >
                                 <Icon name='add' />
-
                             </Button>
                         </div>
                     </Card>
+
+                    <Card style={cardStyle}>
+                        <div className="cv-card-header">
+                            <Icon name="building" />
+                            <b>Eğitim</b>
+                        </div>
+                        <div style={{ marginBottom: "20px", marginTop: "5px" }}>
+                            <List style={{ marginBottom: "15px" }}>
+                                {
+                                    schoolInputs.map((item, index) => (
+                                        <Fragment>
+                                            <List.Item>
+
+                                                <Grid style={{ marginTop: "10px", marginBottom: "0px" }}>
+                                                    <Grid.Row style={{ padding: "0px", display: "block" }}>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                <Icon name="graduation cap" />
+                                                                Okul
+                                                            </div>
+                                                            <Input
+                                                                id="schoolName"
+                                                                name="schoolName"
+                                                                type="text"
+                                                                onChange={e => handleSchoolInputsChange(e, index)}
+                                                                value={item.schoolName}
+                                                                placeholder='Okul Adını Giriniz'
+                                                            />
+                                                        </Grid.Column>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                Bölüm
+                                                            </div>
+                                                            <Input
+                                                                id="department"
+                                                                name="department"
+                                                                type="text"
+                                                                onChange={e => handleSchoolInputsChange(e, index)}
+                                                                value={item.department}
+                                                                placeholder='Okuduğunuz Bölüm'
+                                                            />
+                                                        </Grid.Column>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                Başlangıç
+                                                            </div>
+                                                            <Input
+                                                                id="schoolStartDate"
+                                                                name="schoolStartDate"
+                                                                type="date"
+                                                                onChange={e => handleSchoolInputsChange(e, index)}
+                                                                value={item.schoolStartDate}
+                                                                placeholder='Okula Başladığınız Tarih'
+                                                            />
+                                                        </Grid.Column>
+
+                                                        <Grid.Column width={3}>
+                                                            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+                                                                Bitiş
+                                                            </div>
+                                                            <Input
+                                                                id="graduationDate"
+                                                                name="graduationDate"
+                                                                type="date"
+                                                                onChange={e => handleSchoolInputsChange(e, index)}
+                                                                value={item.graduationDate}
+                                                                placeholder='Mezuniyet Tarihi'
+                                                            />
+                                                        </Grid.Column>
+
+                                                        {index !== 0 &&
+                                                            <GridColumn style={{ width: "auto", marginTop: "27px" }}>
+                                                                <Button
+                                                                    icon
+                                                                    primary
+                                                                    onClick={() => removeSchoolInput(index)}
+                                                                    type="button"
+                                                                >
+                                                                    <Icon name="delete" />
+                                                                </Button>
+                                                            </GridColumn>
+                                                        }
+                                                        {index === 0 && schoolInputs.length > 1 &&
+                                                            <GridColumn></GridColumn>
+                                                        }
+
+                                                    </Grid.Row>
+                                                </Grid>
+                                            </List.Item>
+                                        </Fragment>
+                                    ))
+                                }
+                            </List>
+                            <Button
+                                icon
+                                primary
+                                onClick={() => addSchoolInput()}
+                                type="button"
+                            >
+                                <Icon name='add' />
+                            </Button>
+                        </div>
+                    </Card>
+
+                    <Card style={cardStyle} >
+                        <div style={{ marginBottom: "20px", marginLeft: "20px", marginRight: "20px" }} >
+
+                            <div className="cv-card-header">
+                                <Icon name="pencil" />
+                                <b>Yetenekler</b>
+                            </div>
+
+                            <div style={{ margin: "0 auto", }}>
+                                <TextArea rows={5} style={{ width: "100%", marginTop: "15px" }}
+                                    id="knownTechnologies"
+                                    name="knownTechnologies"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    value={formik.values.knownTechnologies}
+                                    placeholder='Bildiğiniz Teknolojileri Yazınız'
+                                />
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card style={cardStyle} >
+                        <div style={{ marginBottom: "20px" }} >
+
+                            <div className="cv-card-header">
+                                <Icon name="language" />
+                                <b>Diller</b>
+                            </div>
+
+                            <List style={{ marginBottom: "0px" }}>
+                                {
+                                    languageInputs.map((item, index) => (
+                                        <Fragment>
+                                            <List.Item>
+                                                <Grid>
+                                                    <Grid.Row style={{ display: "block", marginBottom: "15px" }}>
+
+                                                        <GridColumn style={{ width: "auto" }}>
+                                                            <div style={{ marginBottom: "10px", fontSize: "16px" }}>
+                                                                {/* <Icon name="comment alternate" /> */}
+                                                                <label>Dil:</label>
+                                                            </div>
+                                                            <Input
+                                                                name="language"
+                                                                type="text"
+                                                                onChange={e => handleLanguageInputChange(e, index)}
+                                                                value={item.language}
+                                                                placeholder='Dil Adını Giriniz'
+                                                            />
+                                                        </GridColumn>
+
+                                                        <GridColumn style={{ width: "auto" }}>
+                                                            <div style={{ marginBottom: "10px", fontSize: "16px" }}>
+                                                                <label>Seviye:</label>
+                                                            </div>
+                                                            <Dropdown
+                                                                search
+                                                                selection
+                                                                onChange={(event, data) =>
+                                                                    handleLevelChange(data.value, data.name, index)
+                                                                }
+                                                                name="level"
+                                                                value={item.level}
+                                                                options={levels}
+                                                                placeholder="(5 Çok İyi - 1 Çok Az)"
+                                                            />
+                                                        </GridColumn>
+
+                                                        {index !== 0 &&
+                                                            <GridColumn style={{ width: "auto", marginTop: "27px" }}>
+                                                                <Button
+                                                                    icon
+                                                                    primary
+                                                                    onClick={() => removeLanguageInput(index)}
+                                                                    type="button"
+                                                                >
+                                                                    <Icon name="delete" />
+                                                                </Button>
+                                                            </GridColumn>
+                                                        }
+                                                        {index === 0 && languageInputs.length > 1 &&
+                                                            <GridColumn></GridColumn>
+                                                        }
+
+                                                    </Grid.Row>
+                                                </Grid>
+                                            </List.Item>
+                                        </Fragment>
+                                    ))
+                                }
+                            </List>
+
+                            <Button
+                                icon
+                                primary
+                                onClick={() => addLanguageInput()}
+                                type="button"
+                            >
+                                <Icon name='add' />
+                            </Button>
+
+                        </div>
+                    </Card>
+
                     <Button
                         content="Ekle"
                         labelPosition="right"
@@ -581,6 +663,7 @@ export default function CreateCandidateProfile() {
                         type="submit"
                         style={{ backgroundColor: "#7FFFFD", marginTop: "10px" }}
                     />
+
                 </Form>
             </div>
 

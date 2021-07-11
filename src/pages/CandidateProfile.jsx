@@ -107,7 +107,7 @@ export default function CandidateProfile() {
                                 width={4}
                                 style={{ paddingRight: "0px", height: "100%", paddingLeft: "0" }}
                             >
-                                <div className="cv-left">
+                                <div style={{padding: "15px", margin: "auto", height: "100%"}}>
                                     {/* <div style={{ marginTop: "20px", fontSize: "25px" }}>
                                         {curriculumVitae.candidate?.firstName}{" "}
                                         {curriculumVitae.candidate?.lastName}
@@ -219,7 +219,7 @@ export default function CandidateProfile() {
                     style={cardStyle}
                 >
                     <div className="job-experiences" style={{ marginLeft: "15px" }}>
-                        <div className="cv-right-header">
+                        <div className="cv-card-header">
                             <Icon name="briefcase" /> <b>İş Deneyimleri</b>
                         </div>
                         <div>
@@ -255,9 +255,9 @@ export default function CandidateProfile() {
                                                         >
                                                             İş Yeri Adı
                                                         </div>
-                                                        <span className="cv-right-grey-text">
+                                                        
                                                             {experience.workplaceName}
-                                                        </span>
+                                                        
                                                     </div>
                                                 </Grid.Column>
                                                 <Grid.Column width={5}>
@@ -292,7 +292,7 @@ export default function CandidateProfile() {
                     style={cardStyle}
                 >
                     <div className="educations" style={{ marginLeft: "15px" }}>
-                        <div className="cv-right-header">
+                        <div className="cv-card-header">
                             <Icon name="building" /> <b>Eğitim</b>
                         </div>
                         <div style={{ marginTop: "20px" }}>
@@ -387,7 +387,7 @@ export default function CandidateProfile() {
                         className="skills"
                         style={{ marginLeft: "15px", marginBottom: "25px" }}
                     >
-                        <div className="cv-right-header">
+                        <div className="cv-card-header">
                             <Icon name="pencil" /> <b>Yetenekler</b>
                         </div>
                         <div style={{ margin: "0 auto" }}>
@@ -405,7 +405,7 @@ export default function CandidateProfile() {
                         className="languages"
                         style={{ marginLeft: "15px", marginBottom: "25px" }}
                     >
-                        <div className="cv-right-header">
+                        <div className="cv-card-header">
                             <Icon name="language" /> <b>Diller</b>
                         </div>
                         <div>

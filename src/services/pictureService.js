@@ -5,7 +5,12 @@ export default class PictureService{
          return axios.get("http://localhost:8080/api/pictures/getAll")
      }
 
-     uploadPicture() {
-        return axios.get("http://localhost:8080/api/pictures/upload")
+     uploadPicture(userId, formData) {
+        let config = {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+          }
+        return axios.post("http://localhost:8080/api/pictures/upload?userId=" + userId, formData, config)
      }
 }
