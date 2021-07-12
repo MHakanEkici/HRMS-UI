@@ -14,6 +14,7 @@ export default function CandidateProfile() {
     const history = useHistory()
 
     const [candidate, setCandidate] = useState({})
+    const [pictureSource, setPictureSource] = useState("https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1")
     const [curriculumVitae, setcurriculumVitae] = useState({})
     const cardStyle = {
         width: "100%",
@@ -35,12 +36,18 @@ export default function CandidateProfile() {
             }
         })
 
-        curriculumVitaeService.getByUserId(id).then(result => {
+        curriculumVitaeService.getByUserId(id).then(result => { debugger;
             if (!result.data.success) {
                 toast.error(result.data.message)
             } else { //Servis cagrimi basarili ise
                 if (result.data.data !== undefined && result.data.data !== null) { //CV kaydi varsa
                     setcurriculumVitae(result.data.data)
+                    if(curriculumVitae !== undefined && curriculumVitae.pictures !== undefined){
+                        setPictureSource(curriculumVitae.pictures[0].pictureUrl) 
+                    } else{
+                        toast.warn("Profil resmi bulunamadı")
+                    }
+                   
                 } else {
                     history.push("/candidateProfileCreate")
                 }
@@ -71,7 +78,7 @@ export default function CandidateProfile() {
                 />
                 <Image
                     className="cv-profile-img"
-                    src={curriculumVitae.pictures !== undefined ? curriculumVitae.pictures[0].pictureUrl : "https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1"}
+                    src={pictureSource}
                     size="small"
                     style={{
                         width: "150px",

@@ -152,7 +152,7 @@ export default function CreateCandidateProfile() {
             formData.append(
                 "multipartFile",
                 image.raw,
-                image.raw.name
+                "profile"
             );         
            
             pictureService.uploadPicture(values.userId, formData).then((result) => { debugger;

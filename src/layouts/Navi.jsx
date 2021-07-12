@@ -45,6 +45,10 @@ export default function Navi() {
         history.push("/login")
     }
 
+    const goToProfilePage = (value, fieldName) => {
+        history.push("/candidateProfile/" + candidate.userId)
+    }
+
     const callSignOut = () => {
         dispatch(signOut());
         toast.success("Çıkış yapıldı")
@@ -91,15 +95,15 @@ export default function Navi() {
                     {isCandidate &&
                         <Fragment>
                             <Menu.Item>
-                                Hoşgeldin {candidate.firstName + " " + candidate.lastName }
-                            </Menu.Item>                            
+                                Hoşgeldin {candidate.firstName + " " + candidate.lastName}
+                            </Menu.Item>
                         </Fragment>
                     }
                     {isEmployer &&
                         <Fragment>
                             <Menu.Item>
-                                Hoşgeldin {employer.firstName + " " + employer.lastName }
-                            </Menu.Item>                            
+                                Hoşgeldin {employer.firstName + " " + employer.lastName}
+                            </Menu.Item>
                         </Fragment>
                     }
 
@@ -107,19 +111,33 @@ export default function Navi() {
                         <Menu.Item>
                             {isLogin
                                 ? //if isLogin
-                                <Button style={{
-                                    borderStyle: "solid",
-                                    borderColor: "black",
-                                    borderWidth: "revert",
-                                }}
-                                    primary onClick={() => callSignOut()} > Çıkış Yap </Button>
+                                <Fragment>
+                                    {isCandidate && 
+                                        <Button style={{
+                                            borderStyle: "solid",
+                                            borderColor: "black",
+                                            borderWidth: "revert",
+                                            marginRight: "10px"
+                                        }}
+                                            primary onClick={() => goToProfilePage()}>Profilim
+                                        </Button>
+                                    }
+                                    <Button style={{
+                                        borderStyle: "solid",
+                                        borderColor: "black",
+                                        borderWidth: "revert"                                       
+                                    }}
+                                        primary onClick={() => callSignOut()} > Çıkış Yap
+                                    </Button>
+                                </Fragment>
                                 : //else
                                 <Button style={{
                                     borderStyle: "solid",
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => goToLoginPage()}> Giriş Yap </Button>
+                                    primary onClick={() => goToLoginPage()}> Giriş Yap
+                                </Button>
 
                             }
                         </Menu.Item>

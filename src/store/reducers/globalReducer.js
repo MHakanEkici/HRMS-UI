@@ -1,5 +1,5 @@
 import { SIGN_IN, SIGN_OUT } from "../actions/globalActions";
-import { isLogin, isEmployer, candidate, isAdmin, isCandidate, employer } from "../initialValues/globalItems";
+import { isLogin, isEmployer, isAdmin, isCandidate, candidate, employer, admin } from "../initialValues/globalItems";
 
 const initialState = {
     isLogin: isLogin,
@@ -7,22 +7,39 @@ const initialState = {
     isAdmin: isAdmin,
     isCandidate: isCandidate,
     candidate: candidate,
-    employer: employer
+    employer: employer,
+    admin: admin
 
 }
 
 export default function globalReducer(state = initialState, { type, payload }) { //actions da type ve payload gönderdiğimiz için buraya type ve payload yazdık
     switch (type) {
 
-        case SIGN_IN:
-            return {
-                ...state,
-                isLogin: true,
-                isCandidate: true,   //hem cartItems hem de state yazmamızın sebebi initialState de birden fazla eleman olursa değiştirmek istemediğin default değerleri korumak için (ders 2:02.00)
-              
-                candidate: payload.data.data //...state.cartItems yazarak cartItems'daki diğer elemanları değiştirmeden ekliyoruz + virgülden sonraki yeni cartItem objesini ekliyoruz
+        case SIGN_IN:                
+            if (payload.data.data.userType === 'Candidate') { 
+                return {
+                    ...state,
+                    isLogin: true,
+                    isCandidate: true,
+                    candidate: payload.data.data //...state.cartItems yazarak cartItems'daki diğer elemanları değiştirmeden ekliyoruz + virgülden sonraki yeni cartItem objesini ekliyoruz
+                }
+            } else if (payload.data.data.userType === 'Employer') {
+                return {
+                    ...state,
+                    isLogin: true,
+                    isEmployer: true,
+                    employer: payload.data.data
+                }
+            } else if (payload.data.data.userType === 'Admin') {
+                return {
+                    ...state,
+                    isLogin: true,
+                    isAdmin: true,
+                    admin: payload.data.data
+                }
             }
-        case SIGN_OUT: 
+
+        case SIGN_OUT:
             return {
                 ...initialState,
             }
