@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Grid } from 'semantic-ui-react'
 import { Route } from 'react-router'
+import { Redirect, Switch } from 'react-router-dom'
 import { ToastContainer } from "react-toastify";
 import JobAdvertList from '../pages/JobAdvertList'
 import JobAdvertCreate from '../pages/JobAdvertCreate'
@@ -21,23 +22,18 @@ export default function Dashboard() {
 
     return (
         <div>
-            <ToastContainer position="bottom-right"/>
-            <Grid
-            //  style = {{backgroundColor: "#66FCF1"}}
-            > 
-                <Grid.Row>
-                    <Grid.Column width={16}>
-                        <Route exact path="/" component={JobAdvertList} />
-                        <Route exact path="/login" component={Login} />                       
-                        <Route exact path="/register/candidate" component={RegisterCandidate} />
-                        <Route exact path="/register/employer" component={RegisterEmployer} />                           
-                        <Route exact path="/jobAdvertCreate" component={JobAdvertCreate} /> 
-                        <Route exact path="/jobAdvert/:id" component={JobAdvertDetail} />
-                        <Route exact path="/candidateProfile/:id" component={CandidateProfile} />
-                        <Route exact path="/candidateProfileCreate" component={CreateCandidateProfile} />
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            <ToastContainer position="bottom-right" />
+            <Switch>
+                <Route exact path="/" component={JobAdvertList} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/register/candidate" component={RegisterCandidate} />
+                <Route exact path="/register/employer" component={RegisterEmployer} />
+                <Route exact path="/jobAdvertCreate" component={JobAdvertCreate} />
+                <Route exact path="/jobAdvert/:id" component={JobAdvertDetail} />
+                <Route exact path="/candidateProfile/:id" component={CandidateProfile} />
+                <Route exact path="/candidateProfileCreate" component={CreateCandidateProfile} />
+                <Redirect from="/*" to="/" />
+            </Switch>
         </div>
     )
 }

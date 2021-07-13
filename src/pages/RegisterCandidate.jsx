@@ -33,9 +33,7 @@ export default function RegisterCandidate() {
                 password: values.password
             }
 
-            candidateService.registerCandidate(request).then((result) => {
-                console.log(result.data.success)
-              
+            candidateService.registerCandidate(request).then((result) => {              
                 if(result !== null && result.data.success){
                     toast.success("Kayıt başarılı")                    
                     history.push("/login")

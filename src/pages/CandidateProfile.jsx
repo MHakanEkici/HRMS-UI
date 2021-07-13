@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Fragment } from "react";
 import { useParams } from "react-router";
-import { Link } from 'react-router-dom'
 import { toast } from "react-toastify";
 import { useHistory } from 'react-router';
-import { Grid, Image, Icon, List, Divider, TextArea, Input, Modal, Button, Header, Card, GridColumn, } from "semantic-ui-react";
+import { useSelector } from 'react-redux'
+import { Grid, Image, Icon, List, Input, Card, GridColumn, } from "semantic-ui-react";
 import CurriculumVitaeService from '../services/curriculumVitaeService';
 import CandidateService from '../services/candidateService';
 
 export default function CandidateProfile() {
-    let { id } = useParams(); //userId mi olması gerek ?
+
+    let { id } = useParams();
 
     const history = useHistory()
 
-    const [candidate, setCandidate] = useState({})
+    const { candidate, isCandidate } = useSelector(state => state.globalReducer)
+
+    const [candidateInfo, setCandidateInfo] = useState({})
     const [pictureSource, setPictureSource] = useState("https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1")
     const [curriculumVitae, setcurriculumVitae] = useState({})
+
+    const candidateRef = useRef({})
+
     const cardStyle = {
         width: "100%",
         boxShadow: "22px 11px 22px rgb(230, 230, 230)",
@@ -24,44 +30,48 @@ export default function CandidateProfile() {
     }
 
     useEffect(() => {
-        let curriculumVitaeService = new CurriculumVitaeService()
+        findCandidate();
+    }, []);
+
+    function findCandidate() {
         let candidateService = new CandidateService()
+        candidateService.getCandidateById(id)
+            .then(result => {
+                if (!result.data.success) {
+                    toast.error(result.data.message)
+                } else { //Servis cagrimi basarili ise               
+                    setCandidateInfo(result.data.data)
+                    candidateRef.current = result.data.data;
+                    findCv(candidateRef);
+                }
+            })
+    }
 
-        candidateService.getCandidateById(id).then(result => {
+    function findCv(candidateRef) {
+
+        let curriculumVitaeService = new CurriculumVitaeService()
+        curriculumVitaeService.getByUserId(id).then(result => {
             if (!result.data.success) {
-                toast.error(result.data.message)
-            } else { //Servis cagrimi basarili ise               
-                setCandidate(result.data.data)
-
-            }
-        })
-
-        curriculumVitaeService.getByUserId(id).then(result => { debugger;
-            if (!result.data.success) {
-                toast.error(result.data.message)
-            } else { //Servis cagrimi basarili ise
-                if (result.data.data !== undefined && result.data.data !== null) { //CV kaydi varsa
-                    setcurriculumVitae(result.data.data)
-                    if(curriculumVitae !== undefined && curriculumVitae.pictures !== undefined){
-                        setPictureSource(curriculumVitae.pictures[0].pictureUrl) 
-                    } else{
-                        toast.warn("Profil resmi bulunamadı")
-                    }
-                   
-                } else {
+                if (isCandidate && candidate.userId === candidateRef.current.userId) {
                     history.push("/candidateProfileCreate")
+                } else {
+                    toast.warn("Özgeçmiş bilgisi bulunamadı")
+                }
+            } else { //Servis cagrimi basarili ise
+                setcurriculumVitae(result.data.data)
+                if (result.data.data.pictures !== undefined && result.data.data.pictures !== null && result.data.data.pictures.length > 0 ) {
+                    setPictureSource(curriculumVitae.pictures[0].pictureUrl)
+                } else {
+                    toast.warn("Profil resmi bulunamadı")
                 }
             }
         })
-
-    }, []);
-
+    }
 
 
     return (
-
         <Fragment>
-            <div style={{ height: '300px' }}>
+            <div style={{ height: "300px", marginTop: "20px" }}>
                 <Image
                     className="cv-profile-img"
                     src={"https://www.uscybersecurity.net/wp-content/uploads/2017/06/network-integrity-1100x300.jpg"}
@@ -74,7 +84,6 @@ export default function CandidateProfile() {
                         borderWidth: "thick",
                         borderColor: "black"
                     }}
-
                 />
                 <Image
                     className="cv-profile-img"
@@ -92,96 +101,68 @@ export default function CandidateProfile() {
                         borderWidth: "thick",
                     }}
                 />
-
             </div>
+
             <div style={{ marginTop: "60px", marginLeft: "28px", fontSize: "25px", float: "left" }}>
-                {candidate?.firstName}{" "}
-                {candidate?.lastName}
+                {candidateInfo?.firstName}
+                {" "}
+                {candidateInfo?.lastName}
             </div>
-            <div
-                style={{
-                    marginTop: "90px",
-                    // borderRadius: "15px",
 
-                }}
-            >
-                <Card
-                    style={cardStyle}
-                >
+            <div style={{ marginTop: "90px", }}>
+                <Card style={cardStyle} >
                     <Grid>
                         <Grid.Row>
                             <Grid.Column
                                 width={4}
                                 style={{ paddingRight: "0px", height: "100%", paddingLeft: "0" }}
                             >
-                                <div style={{padding: "15px", margin: "auto", height: "100%"}}>
-                                    {/* <div style={{ marginTop: "20px", fontSize: "25px" }}>
-                                        {curriculumVitae.candidate?.firstName}{" "}
-                                        {curriculumVitae.candidate?.lastName}
-                                    </div> */}
-                                    <div
-                                        style={{
-                                            textAlign: "left",
-                                            marginLeft: "28px",
-                                        }}
-                                    >
+                                <div style={{ padding: "15px", margin: "auto", height: "100%", textAlign: "left", marginLeft: "28px" }}>
+                                    <div>
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="at" /> Email
+                                        </div>
+                                        {candidateInfo?.email}
+                                    </div>
+                                    <div>
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="table" /> Doğum Tarihi
+                                        </div>
                                         <div>
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="at" /> Email
-                                            </div>
+                                            {candidateInfo?.birthDate}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="cv-left-bar-header">
+                                            <Icon name="thumbtack" /> Linkler
+                                        </div>
+                                        <div style={{ marginBottom: "10px" }}>
                                             <span
                                             // style={{ color: "#d4d4d4" }}
                                             >
-                                                {candidate?.email}
+                                                <a
+                                                    href={curriculumVitae?.githubAddress}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+
+                                                >
+                                                    GitHub
+                                                </a>
+                                            </span>
+                                            <span style={{ marginLeft: "10px" }}
+                                            // style={{ color: "#d4d4d4" }}
+                                            >
+                                                <a
+                                                    href={curriculumVitae?.linkedinAddress}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    Linkedin
+                                                </a>
                                             </span>
                                         </div>
-                                        <div>
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="table" /> Doğum Tarihi
-                                            </div>
-                                            <div>
-                                                <span
-                                                // style={{ color: "#d4d4d4" }}
-                                                >
-                                                    {candidate?.birthDate}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="cv-left-bar-header">
-                                                <Icon name="thumbtack" /> Linkler
-                                            </div>
-                                            <div style={{ marginBottom: "10px" }}>
-                                                <span
-                                                // style={{ color: "#d4d4d4" }}
-                                                >
-                                                    <a
-                                                        href={curriculumVitae?.githubAddress}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-
-                                                    >
-                                                        GitHub
-                                                    </a>
-                                                </span>
-                                                <span style={{ marginLeft: "10px" }}
-                                                // style={{ color: "#d4d4d4" }}
-                                                >
-                                                    <a
-                                                        href={curriculumVitae?.linkedinAddress}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        Linkedin
-                                                    </a>
-                                                </span>
-                                            </div>
-                                            {/* <LinkUpdateModal
-                                            candidateLinks={curriculumVitae.candidateLinks}
-                                            candidateId={id}
-                                        /> */}
-                                        </div>
                                     </div>
+
                                 </div>
                             </Grid.Column>
                             <GridColumn
@@ -262,9 +243,9 @@ export default function CandidateProfile() {
                                                         >
                                                             İş Yeri Adı
                                                         </div>
-                                                        
-                                                            {experience.workplaceName}
-                                                        
+
+                                                        {experience.workplaceName}
+
                                                     </div>
                                                 </Grid.Column>
                                                 <Grid.Column width={5}>
@@ -287,17 +268,11 @@ export default function CandidateProfile() {
                                     </List.Item>
                                 ))}
                             </List>
-                            {/* <JobExperienceUpdateModal
-                                            candidateJobExperiences={curriculumVitae.jobExperiences}
-                                            candidateId={id}
-                                        />*/}
                         </div>
                     </div>
                 </Card>
-                {/* <Divider style={{ marginLeft: "0px" }} /> */}
-                <Card
-                    style={cardStyle}
-                >
+
+                <Card style={cardStyle}>
                     <div className="educations" style={{ marginLeft: "15px" }}>
                         <div className="cv-card-header">
                             <Icon name="building" /> <b>Eğitim</b>
@@ -379,17 +354,11 @@ export default function CandidateProfile() {
                                     </Grid>
                                 ))}
                             </List>
-                            {/* <SchoolUpdateModal
-                                            candidateSchools={curriculumVitae.schools}
-                                            candidateId={id}
-                                        /> */}
                         </div>
                     </div>
                 </Card>
-                {/* <Divider style={{ marginLeft: "0px" }} /> */}
-                <Card
-                    style={cardStyle}
-                >
+
+                <Card style={cardStyle}>
                     <div
                         className="skills"
                         style={{ marginLeft: "15px", marginBottom: "25px" }}
@@ -453,17 +422,10 @@ export default function CandidateProfile() {
                                     ))}
                                 </Grid>
                             </List>
-                            {/* <LanguageUpdateModal
-                                            candidateLanguages={curriculumVitae.languages}
-                                            candidateId={id}
-                                        /> */}
                         </div>
                     </div>
                 </Card>
-                {/* </div>
-                        </Grid.Column> */}
-                {/* </Grid.Row>
-                </Grid> */}
+
             </div>
         </Fragment>
     )

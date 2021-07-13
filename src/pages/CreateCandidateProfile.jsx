@@ -18,8 +18,8 @@ export default function CreateCandidateProfile() {
     const { candidate } = useSelector(state => state.globalReducer)
 
     const [image, setImage] = useState({ preview: "", raw: "" });
-    const [languageInputs, setLanguageInputs] = useState([{ language: '', level: '' }])
-    const [schoolInputs, setSchoolInputs] = useState([{ schoolName: '', department: '', schoolStartDate: '', graduationDate: '' }])
+    const [languageInputs, setLanguageInputs] = useState([{ languageName: '', level: '' }])
+    const [schoolInputs, setSchoolInputs] = useState([{ schoolName: '', department: '', startDate: '', graduationDate: '' }])
     const [jobExperienceInputs, setJobExperienceInputs] = useState([{ workplaceName: '', position: '', startDate: '', finishDate: '' }])
 
     const levels = [
@@ -31,7 +31,6 @@ export default function CreateCandidateProfile() {
     ]
 
     //PICTURE UPLOAD
-
     const onFileChange = (e) => {       
         if (e.target.files.length) {
             const types = ['image/png', 'image/jpeg']
@@ -53,19 +52,12 @@ export default function CreateCandidateProfile() {
             "myFile",
             image.raw,
             image.raw.name
-        );
-        // await fetch("YOUR_URL", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "multipart/form-data"
-        //     },
-        //     body: formData
-        //   });
+        );       
     }
 
     //LANGUAGE INPUTS
     const addLanguageInput = () => {
-        setLanguageInputs([...languageInputs, { language: '', level: '' }])
+        setLanguageInputs([...languageInputs, { languageName: '', level: '' }])
     }
 
     const removeLanguageInput = (index) => {
@@ -89,7 +81,7 @@ export default function CreateCandidateProfile() {
 
     //SCHOOL INPUTS
     const addSchoolInput = () => {
-        setSchoolInputs([...schoolInputs, { schoolName: '', department: '', schoolStartDate: '', graduationDate: '' }])
+        setSchoolInputs([...schoolInputs, { schoolName: '', department: '', startDate: '', graduationDate: '' }])
     }
 
     const removeSchoolInput = (index) => {
@@ -121,21 +113,7 @@ export default function CreateCandidateProfile() {
         const list = [...jobExperienceInputs];
         list[index][name] = value;
         setJobExperienceInputs(list);
-    };
-
-    //HANDLE RESULT
-    const handleResult = (result) => {
-        if (result !== null && result.data.success) {
-            toast.success("CV başarılı bir şekilde eklendi")
-            history.push("/candidateProfile/" + candidate.userId)
-        } else {
-            if (result !== null) {
-                toast.error(result.data.message)
-            } else {
-                toast.error("Bilinmeyen bir hata alındı")
-            }
-        }
-    }
+    };    
 
     //FORMIK
     const formik = useFormik({
@@ -153,9 +131,9 @@ export default function CreateCandidateProfile() {
                 "multipartFile",
                 image.raw,
                 "profile"
-            );         
-           
-            pictureService.uploadPicture(values.userId, formData).then((result) => { debugger;
+            );
+
+            pictureService.uploadPicture(values.userId, formData).then((result) => {
                 if (result !== null && result.data.success) {
                     const cvRequest =
                     {
@@ -167,11 +145,10 @@ export default function CreateCandidateProfile() {
                         foreignLanguages: languageInputs,
                         knownTechnologies: values.knownTechnologies,
                         userId: values.userId
-                    }
-                    debugger;
-                    // curriculumVitaeService.add(cvRequest).then((result) => {
-                    //     handleResult(result)
-                    // });
+                    }                    
+                    curriculumVitaeService.add(cvRequest).then((result) => {
+                        handleAddCvResult(result)
+                    });
                 } else {
                     if (result !== null) {
                         toast.error(result.data.message)
@@ -180,10 +157,22 @@ export default function CreateCandidateProfile() {
                     }
                 }
             });
-
-
         }
     });
+
+    //HANDLE ADD CV RESULT
+    const handleAddCvResult = (result) => {
+        if (result !== null && result.data.success) {
+            toast.success("CV başarılı bir şekilde eklendi")
+            history.push("/candidateProfile/" + candidate.userId)
+        } else {
+            if (result !== null) {
+                toast.error(result.data.message)
+            } else {
+                toast.error("Bilinmeyen bir hata alındı")
+            }
+        }
+    }
 
     //STYLE
     const cardStyle = {
@@ -196,7 +185,7 @@ export default function CreateCandidateProfile() {
     return (
         <Fragment>
 
-            <div style={{ height: '300px' }}>
+            <div style={{ height: "300px", marginTop: "20px"  }}>
                 <Image
                     className="cv-profile-img"
                     src={"https://www.uscybersecurity.net/wp-content/uploads/2017/06/network-integrity-1100x300.jpg"}
@@ -231,8 +220,8 @@ export default function CreateCandidateProfile() {
                 <div              
                     style={{
                         position: "absolute",
-                        marginTop: "200px", //245px
-                        marginLeft: "120px", //50px
+                        marginTop: "200px",
+                        marginLeft: "120px",
                         paddingTop: "10px",
                         paddingLeft: "3px",
                         fontSize: "30px",
@@ -251,16 +240,7 @@ export default function CreateCandidateProfile() {
                         style={{ display: "none" }}
                     />
                     <label htmlFor="uploadButton">
-                        <Icon name= {image.preview ? "edit" : "camera"} />
-                        {/* <div
-                            style={{
-                                marginTop: "7px",
-                                fontSize: "12px",
-                                fontWeight: "bold"
-                            }}
-                        >
-                            Resim Yüklemek<br></br> İçin Tıklayınız
-                        </div> */}
+                        <Icon name= {image.preview ? "edit" : "camera"} />                        
                     </label>
                 </div>
 
@@ -497,7 +477,7 @@ export default function CreateCandidateProfile() {
                                                                 name="schoolStartDate"
                                                                 type="date"
                                                                 onChange={e => handleSchoolInputsChange(e, index)}
-                                                                value={item.schoolStartDate}
+                                                                value={item.startDate}
                                                                 placeholder='Okula Başladığınız Tarih'
                                                             />
                                                         </Grid.Column>
@@ -593,10 +573,10 @@ export default function CreateCandidateProfile() {
                                                                 <label>Dil:</label>
                                                             </div>
                                                             <Input
-                                                                name="language"
+                                                                name="languageName"
                                                                 type="text"
                                                                 onChange={e => handleLanguageInputChange(e, index)}
-                                                                value={item.language}
+                                                                value={item.languageName}
                                                                 placeholder='Dil Adını Giriniz'
                                                             />
                                                         </GridColumn>
@@ -661,7 +641,7 @@ export default function CreateCandidateProfile() {
                         positive
                         size="big"
                         type="submit"
-                        style={{ backgroundColor: "#7FFFFD", marginTop: "10px" }}
+                        style={{ backgroundColor: "#7FFFFD", marginTop: "10px", marginBottom: "50px"}}
                     />
 
                 </Form>

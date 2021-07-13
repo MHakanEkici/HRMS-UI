@@ -52,14 +52,12 @@ export default function Login() {
             }
 
             if (userType === "Candidate") {
-                candidateService.logInCandidate(request).then((result) => {
-                    console.log(result)
+                candidateService.logInCandidate(request).then((result) => {                   
                     handleResult(result)                                  
                 }); 
             }
             else {
-                employerService.logInEmployer(request).then((result) => {
-                    console.log(result)                   
+                employerService.logInEmployer(request).then((result) => {                                   
                     handleResult(result)
                 });
             }

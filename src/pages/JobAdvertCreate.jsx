@@ -42,8 +42,7 @@ export default function JobAdvertCreate() {
             setCities(cityList);
         })
 
-        jobService.getJobs().then(result => {
-            console.log(result)
+        jobService.getJobs().then(result => {           
             const jobList = []
 
             result.data.data.map(jobResult => {
@@ -101,8 +100,7 @@ export default function JobAdvertCreate() {
         },
     });
 
-    const handleChangeSemantic = (value, fieldName) => {
-        console.log(value)
+    const handleChangeSemantic = (value, fieldName) => {       
         formik.setFieldValue(fieldName, value)
     }
 

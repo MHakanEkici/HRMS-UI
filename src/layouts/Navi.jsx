@@ -66,12 +66,13 @@ export default function Navi() {
     }
 
     return (
-        <div>
-            <Menu size='large' style={{ backgroundColor: "#66FCF1", fontFamily: 'Arial', fontize: '16px' }}>
-                <Container>
+
+        <Menu size='large' style={{ backgroundColor: "#45c4cd", fontFamily: 'Arial', fontize: '16px' }}>
+            <Container>
+                
                     <Link to={`/`}>
                         <Menu.Item
-                            name='anasayfa'
+                            name='Anasayfa'
                             style={{
                                 borderStyle: "solid",
                                 borderColor: "black",
@@ -82,6 +83,7 @@ export default function Navi() {
                             }}
                         />
                     </Link>
+
                     {isEmployer &&
                         <Link to={`/jobAdvertCreate`}>
                             <Menu.Item
@@ -107,63 +109,64 @@ export default function Navi() {
                         </Fragment>
                     }
 
-                    <Menu.Menu position='right'>
-                        <Menu.Item>
-                            {isLogin
-                                ? //if isLogin
-                                <Fragment>
-                                    {isCandidate && 
-                                        <Button style={{
-                                            borderStyle: "solid",
-                                            borderColor: "black",
-                                            borderWidth: "revert",
-                                            marginRight: "10px"
-                                        }}
-                                            primary onClick={() => goToProfilePage()}>Profilim
-                                        </Button>
-                                    }
+                
+                <Menu.Menu position='right'>
+                    <Menu.Item>
+                        {isLogin
+                            ? //if isLogin
+                            <Fragment>
+                                {isCandidate &&
                                     <Button style={{
                                         borderStyle: "solid",
                                         borderColor: "black",
-                                        borderWidth: "revert"                                       
+                                        borderWidth: "revert",
+                                        marginRight: "10px"
                                     }}
-                                        primary onClick={() => callSignOut()} > Çıkış Yap
+                                        primary onClick={() => goToProfilePage()}>Profilim
                                     </Button>
-                                </Fragment>
-                                : //else
+                                }
+                                <Button style={{
+                                    borderStyle: "solid",
+                                    borderColor: "black",
+                                    borderWidth: "revert"
+                                }}
+                                    primary onClick={() => callSignOut()} > Çıkış Yap
+                                </Button>
+                            </Fragment>
+                            : //else
+                            <Button style={{
+                                borderStyle: "solid",
+                                borderColor: "black",
+                                borderWidth: "revert",
+                            }}
+                                primary onClick={() => goToLoginPage()}> Giriş Yap
+                            </Button>
+
+                        }
+                    </Menu.Item>
+
+                    {!isLogin && //isLogin değilse
+                        <Fragment>
+                            <Menu.Item>
                                 <Button style={{
                                     borderStyle: "solid",
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => goToLoginPage()}> Giriş Yap
-                                </Button>
+                                    primary onClick={() => registerCandidate()}>Kayıt Ol</Button>
+                            </Menu.Item>
+                            <Menu.Item>
+                                <Button style={{
+                                    borderStyle: "solid",
+                                    borderColor: "black",
+                                    borderWidth: "revert",
+                                }}
+                                    primary onClick={() => registerEmployer()}>İşveren Kaydı</Button>
+                            </Menu.Item>
+                        </Fragment>
+                    }
 
-                            }
-                        </Menu.Item>
-
-                        {!isLogin && //isLogin değilse
-                            <Fragment>
-                                <Menu.Item>
-                                    <Button style={{
-                                        borderStyle: "solid",
-                                        borderColor: "black",
-                                        borderWidth: "revert",
-                                    }}
-                                        primary onClick={() => registerCandidate()}>Kayıt Ol</Button>
-                                </Menu.Item>
-                                <Menu.Item>
-                                    <Button style={{
-                                        borderStyle: "solid",
-                                        borderColor: "black",
-                                        borderWidth: "revert",
-                                    }}
-                                        primary onClick={() => registerEmployer()}>İşveren Kaydı</Button>
-                                </Menu.Item>
-                            </Fragment>
-                        }
-
-                        {/* <Dropdown
+                    {/* <Dropdown
                             onChange={(event, data) => {
                                 signIn(data.value, data.name);
                             }}
@@ -173,10 +176,10 @@ export default function Navi() {
                             placeholder="Giriş Yap"
                         /> */}
 
-                    </Menu.Menu>
+                </Menu.Menu>
 
-                </Container>
-            </Menu>
-        </div>
+            </Container>
+        </Menu>
+
     )
 }
