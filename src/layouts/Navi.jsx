@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { toast } from "react-toastify";
 import { signOut } from '../store/actions/globalActions'
 
-export default function Navi() {
+export default function Navi({clearData}) {
 
     const { isLogin, isEmployer, isCandidate, candidate, employer } = useSelector(state => state.globalReducer)
 
@@ -50,6 +50,7 @@ export default function Navi() {
     }
 
     const callSignOut = () => {
+        clearData()
         dispatch(signOut());
         toast.success("Çıkış yapıldı")
         history.push("/") //anasayfaya yani / pathine yönlendir.     

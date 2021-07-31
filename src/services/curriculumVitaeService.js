@@ -7,5 +7,9 @@ export default class CurriculumVitaeService {
 
      add(values){
         return axios.post("http://localhost:8080/api/curriculumVitaes/add",values)
-    }   
+    }  
+    
+    update(values){
+        return axios.post("http://localhost:8080/api/curriculumVitaes/update",values)
+    }
 }

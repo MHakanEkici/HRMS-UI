@@ -16,27 +16,27 @@ export default function Login() {
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const [userType, setUserType] = useState('') 
+    const [userType, setUserType] = useState('')
 
     const handleChange = (e, { value }) => {
         setUserType(value)
     }
 
     const handleResult = (result) => {
-        if(result !== null && result.data.success){
-            dispatch(signIn(result)); 
-            
-            toast.success("Giriş başarılı") 
-             
+        if (result !== null && result.data.success) {
+            dispatch(signIn(result));
+
+            toast.success("Giriş başarılı")
+
             history.push("/")
-           
+
         } else {
-            if(result !== null){
+            if (result !== null) {
                 toast.error(result.data.message)
-            }else{
+            } else {
                 toast.error("Bilinmeyen bir hata alındı")
-            }                        
-        } 
+            }
+        }
     }
 
     const formik = useFormik({
@@ -52,13 +52,21 @@ export default function Login() {
             }
 
             if (userType === "Candidate") {
-                candidateService.logInCandidate(request).then((result) => {                   
-                    handleResult(result)                                  
-                }); 
+                candidateService.logInCandidate(request).then((result) => {
+                    handleResult(result)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    toast.error("Bilinmeyen bir hata alındı")
+                });
             }
             else {
-                employerService.logInEmployer(request).then((result) => {                                   
+                employerService.logInEmployer(request).then((result) => {
                     handleResult(result)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    toast.error("Bilinmeyen bir hata alındı")
                 });
             }
         }
@@ -73,8 +81,8 @@ export default function Login() {
                         Hesabınıza giriş yapın
                     </Header>
                     {/*formik eklenecek*/}
-                    <Form 
-                        size='large' 
+                    <Form
+                        size='large'
                         onSubmit={formik.handleSubmit}>  {/*Formik onSubmit çağrımı*/}
                         <Segment stacked>
                             <Input
@@ -88,7 +96,7 @@ export default function Login() {
                                 iconPosition='left'
                                 placeholder='E-Posta adresi'
                             />
-                            <Input style={{marginTop: "15px"}}
+                            <Input style={{ marginTop: "15px" }}
                                 id="password"
                                 name="password"
                                 type="password"
@@ -100,7 +108,7 @@ export default function Login() {
                                 placeholder='Parola'
                             />
 
-                            <Form.Field style={{marginTop: "15px"}}>
+                            <Form.Field style={{ marginTop: "15px" }}>
                                 <Radio
                                     label='Üye'
                                     name='radioGroup'
@@ -119,10 +127,10 @@ export default function Login() {
                                 />
                             </Form.Field>
 
-                            <Button 
-                                color='teal' 
-                                fluid 
-                                size='large'                              
+                            <Button
+                                color='teal'
+                                fluid
+                                size='large'
                                 type="submit"
                             >
                                 Giriş yap

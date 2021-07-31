@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Fragment } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from 'react-redux'
@@ -8,7 +8,7 @@ import { Grid, Image, Icon, List, TextArea, Input, Button, Card, GridColumn, Dro
 import CurriculumVitaeService from '../services/curriculumVitaeService';
 import PictureService from '../services/pictureService';
 
-export default function CreateCandidateProfile() {
+export default function CreateCandidateProfile(currentCv) {
 
     let curriculumVitaeService = new CurriculumVitaeService()
     let pictureService = new PictureService()
@@ -16,6 +16,9 @@ export default function CreateCandidateProfile() {
     const history = useHistory()
 
     const { candidate } = useSelector(state => state.globalReducer)
+
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [cvToUpdate, setCvToUpdate] = useState({});
 
     const [image, setImage] = useState({ preview: "", raw: "" });
     const [languageInputs, setLanguageInputs] = useState([{ languageName: '', level: '' }])
@@ -30,8 +33,16 @@ export default function CreateCandidateProfile() {
         { text: '5', value: '5' }
     ]
 
+    useEffect(() => {       
+        if (currentCv !== undefined && currentCv.currentCv.userId !== undefined) {
+            setIsUpdate(true)
+            setCvToUpdate(currentCv.currentCv)
+            debugger;
+        }
+    }, []);
+
     //PICTURE UPLOAD
-    const onFileChange = (e) => {       
+    const onFileChange = (e) => {
         if (e.target.files.length) {
             const types = ['image/png', 'image/jpeg']
             // if (types.every(type => e.target.files[0].type !== type)) {
@@ -52,7 +63,7 @@ export default function CreateCandidateProfile() {
             "myFile",
             image.raw,
             image.raw.name
-        );       
+        );
     }
 
     //LANGUAGE INPUTS
@@ -113,15 +124,15 @@ export default function CreateCandidateProfile() {
         const list = [...jobExperienceInputs];
         list[index][name] = value;
         setJobExperienceInputs(list);
-    };    
+    };
 
     //FORMIK
-    const formik = useFormik({
-        initialValues: {
-            githubAddress: "",
-            linkedinAddress: "",
-            coverLetter: "",
-            knownTechnologies: "",
+    const formik = useFormik({ 
+        initialValues: { 
+            githubAddress: isUpdate ? cvToUpdate.githubAddress : "",
+            linkedinAddress: isUpdate ? cvToUpdate.linkedinAddress : "",
+            coverLetter: isUpdate ? cvToUpdate.coverLetter : "",
+            knownTechnologies:isUpdate ? cvToUpdate.knownTechnologies : "",
             userId: candidate.userId,
         },
         onSubmit: (values) => {
@@ -145,7 +156,7 @@ export default function CreateCandidateProfile() {
                         foreignLanguages: languageInputs,
                         knownTechnologies: values.knownTechnologies,
                         userId: values.userId
-                    }                    
+                    }
                     curriculumVitaeService.add(cvRequest).then((result) => {
                         handleAddCvResult(result)
                     });
@@ -185,7 +196,7 @@ export default function CreateCandidateProfile() {
     return (
         <Fragment>
 
-            <div style={{ height: "300px", marginTop: "20px"  }}>
+            <div style={{ height: "300px", marginTop: "20px" }}>
                 <Image
                     className="cv-profile-img"
                     src={"https://www.uscybersecurity.net/wp-content/uploads/2017/06/network-integrity-1100x300.jpg"}
@@ -217,7 +228,7 @@ export default function CreateCandidateProfile() {
                     }}
                 />
 
-                <div              
+                <div
                     style={{
                         position: "absolute",
                         marginTop: "200px",
@@ -240,7 +251,7 @@ export default function CreateCandidateProfile() {
                         style={{ display: "none" }}
                     />
                     <label htmlFor="uploadButton">
-                        <Icon name= {image.preview ? "edit" : "camera"} />                        
+                        <Icon name={image.preview ? "edit" : "camera"} />
                     </label>
                 </div>
 
@@ -641,7 +652,7 @@ export default function CreateCandidateProfile() {
                         positive
                         size="big"
                         type="submit"
-                        style={{ backgroundColor: "#7FFFFD", marginTop: "10px", marginBottom: "50px"}}
+                        style={{ backgroundColor: "#7FFFFD", marginTop: "10px", marginBottom: "50px" }}
                     />
 
                 </Form>

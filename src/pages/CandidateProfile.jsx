@@ -4,23 +4,28 @@ import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { useHistory } from 'react-router';
 import { useSelector } from 'react-redux'
-import { Grid, Image, Icon, List, Input, Card, GridColumn, } from "semantic-ui-react";
+import { Grid, Image, Icon, List, Input, Card, GridColumn, Button } from "semantic-ui-react";
 import CurriculumVitaeService from '../services/curriculumVitaeService';
 import CandidateService from '../services/candidateService';
 
-export default function CandidateProfile() {
+export default function CandidateProfile({setCv}) {
 
     let { id } = useParams();
 
     const history = useHistory()
 
-    const { candidate, isCandidate } = useSelector(state => state.globalReducer)
+    const { candidate, isCandidate, isLogin } = useSelector(state => state.globalReducer)
 
     const [candidateInfo, setCandidateInfo] = useState({})
     const [pictureSource, setPictureSource] = useState("https://i1.wp.com/researchictafrica.net/wp/wp-content/uploads/2016/10/default-profile-pic.jpg?fit=300%2C300&ssl=1")
     const [curriculumVitae, setcurriculumVitae] = useState({})
 
     const candidateRef = useRef({})
+
+    const goToCreateCandidateProfilePage = () => {
+        setCv(curriculumVitae)
+        history.push("/candidateProfileCreate/")
+    }
 
     const cardStyle = {
         width: "100%",
@@ -59,8 +64,8 @@ export default function CandidateProfile() {
                 }
             } else { //Servis cagrimi basarili ise
                 setcurriculumVitae(result.data.data)
-                if (result.data.data.pictures !== undefined && result.data.data.pictures !== null && result.data.data.pictures.length > 0 ) {
-                    setPictureSource(curriculumVitae.pictures[0].pictureUrl)
+                if (result.data.data.pictures !== undefined && result.data.data.pictures !== null && result.data.data.pictures.length > 0) {
+                    setPictureSource(result.data.data.pictures[0].pictureUrl)
                 } else {
                     toast.warn("Profil resmi bulunamadı")
                 }
@@ -103,10 +108,26 @@ export default function CandidateProfile() {
                 />
             </div>
 
-            <div style={{ marginTop: "60px", marginLeft: "28px", fontSize: "25px", float: "left" }}>
-                {candidateInfo?.firstName}
-                {" "}
-                {candidateInfo?.lastName}
+            <div style={{ marginTop: "60px", marginLeft: "28px", fontSize: "25px", width: "100%"}}>
+                <div style={{float: "left"}}>
+                    {candidateInfo?.firstName}
+                    {" "}
+                    {candidateInfo?.lastName}
+                </div>
+
+                {isCandidate && candidate.userId == id &&
+                    <Button
+                        content="Profili Düzenle"
+                        labelPosition="right"
+                        icon="edit"
+                        positive
+                        size="big"
+                        type="submit"
+                        style={{ backgroundColor: "#d1fffc", color: "black", marginTop: "-10px", marginBottom: "20px",float: "right", marginRight: "30px" }}
+                        primary onClick={() => goToCreateCandidateProfilePage()}
+                    />
+
+                }
             </div>
 
             <div style={{ marginTop: "90px", }}>
