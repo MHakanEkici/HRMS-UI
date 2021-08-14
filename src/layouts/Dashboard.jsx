@@ -11,6 +11,7 @@ import RegisterCandidate from '../pages/RegisterCandidate';
 import RegisterEmployer from '../pages/RegisterEmployer';
 import CandidateProfile from '../pages/CandidateProfile';
 import CreateCandidateProfile from '../pages/CreateCandidateProfile';
+import FavouriteJobAdvert from '../pages/FavouriteJobAdvert';
 
 export default function Dashboard({setCv, sendCurrentCv}) {   
 
@@ -26,6 +27,7 @@ export default function Dashboard({setCv, sendCurrentCv}) {
                 <Route exact path="/jobAdvert/:id" component={JobAdvertDetail} />
                 <Route exact path="/candidateProfile/:id" component={() => <CandidateProfile setCv={(cv) => setCv(cv)} />} /> 
                 <Route exact path="/candidateProfileCreate" component={() => <CreateCandidateProfile currentCv={sendCurrentCv}/> }/> 
+                <Route exact path="/favouriteJobAdvert/:id" component={FavouriteJobAdvert} />
                 <Redirect from="/*" to="/" />
             </Switch>
         </div>

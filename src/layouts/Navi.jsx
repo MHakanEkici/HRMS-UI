@@ -49,6 +49,10 @@ export default function Navi({clearData}) {
         history.push("/candidateProfile/" + candidate.userId)
     }
 
+    const goToFavouriteJobAdvertPage = (value, fieldName) => {
+        history.push("/favouriteJobAdvert/" + candidate.userId)
+    }
+
     const callSignOut = () => {
         clearData()
         dispatch(signOut());
@@ -116,6 +120,16 @@ export default function Navi({clearData}) {
                         {isLogin
                             ? //if isLogin
                             <Fragment>
+                                {isCandidate &&
+                                    <Button style={{
+                                        borderStyle: "solid",
+                                        borderColor: "black",
+                                        borderWidth: "revert",
+                                        marginRight: "10px"
+                                    }}
+                                        primary onClick={() => goToFavouriteJobAdvertPage()}>Favori İlanlarım
+                                    </Button>
+                                }
                                 {isCandidate &&
                                     <Button style={{
                                         borderStyle: "solid",
