@@ -68,18 +68,20 @@ export default function JobAdvertList() {
                                     </Card.Description>
                                 </Card.Content>
                             </Card>
-                            <div>
-                                <Button>
-                                    Başvur
-                                </Button>
-                                <Button as="div" labelPosition="right" onClick={() => { handleAddFavourite(jobAdvert.jobAdvertId) }}>
-                                    <Button color="red">
-                                        <Icon name="heart" />
-                                        Favorilere Ekle
+                            {isCandidate &&
+                                <div>
+                                    <Button>
+                                        Başvur
                                     </Button>
-                                </Button>
+                                    <Button as="div" labelPosition="right" onClick={() => { handleAddFavourite(jobAdvert.jobAdvertId) }}>
+                                        <Button color="red">
+                                            <Icon name="heart" />
+                                            Favorilere Ekle
+                                        </Button>
+                                    </Button>
 
-                            </div>
+                                </div>
+                            }
                         </Card>
 
                     ))}
