@@ -14,7 +14,7 @@ export default function JobAdvertList() {
     const { candidate, isCandidate, isLogin } = useSelector(state => state.globalReducer)
 
     let favouriteJobAdvertService = new FavouriteJobAdvertService();
-    const handleAddFavorite = (jobAdvertId) => {
+    const handleAddFavourite = (jobAdvertId) => {
         favouriteJobAdvertService.add(candidate.userId, jobAdvertId).then((result) => {
             toast.success(result.data.message)
         })
@@ -69,15 +69,16 @@ export default function JobAdvertList() {
                                 </Card.Content>
                             </Card>
                             <div>
-                                <Button as="div" labelPosition="right" onClick={() => { handleAddFavorite(jobAdvert.jobAdvertId) }}>
+                                <Button>
+                                    Başvur
+                                </Button>
+                                <Button as="div" labelPosition="right" onClick={() => { handleAddFavourite(jobAdvert.jobAdvertId) }}>
                                     <Button color="red">
                                         <Icon name="heart" />
                                         Favorilere Ekle
                                     </Button>
                                 </Button>
-                                <Button>
-                                    lolololhjh
-                                </Button>
+
                             </div>
                         </Card>
 

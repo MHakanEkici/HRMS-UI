@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import JobAdvertService from '../services/jobAdvertService'
-import { Card, Container } from 'semantic-ui-react'
+import { Card, Container, Button, Icon } from 'semantic-ui-react'
+import { toast } from "react-toastify";
 import { Fragment } from 'react'
 import backgroundImage from '../media/background.jpg'
 import FavouriteJobAdvertService from '../services/favouriteJobAdvertService'
@@ -14,6 +15,13 @@ export default function FavouriteJobAdvert() {
     const [favouriteJobAdverts, setFavouriteJobAdverts] = useState([])
 
     const { candidate, isCandidate, isLogin } = useSelector(state => state.globalReducer)
+
+    let favouriteJobAdvertService = new FavouriteJobAdvertService()
+    const handleDeleteFavourite = (favouriteJobAdvertId) => {       
+        favouriteJobAdvertService.delete(favouriteJobAdvertId).then((result) => {
+            toast.success(result.data.message)
+        })    
+    }
 
     useEffect(() => {
         let favouriteJobAdvertService = new FavouriteJobAdvertService()
@@ -43,22 +51,28 @@ export default function FavouriteJobAdvert() {
 
                         {favouriteJobAdverts.map((favouriteJobAdvert) => (
 
-                            <Card fluid color="teal" href={`/jobAdvert/${favouriteJobAdvert.jobAdvert.jobAdvertId}`} key={favouriteJobAdvert.jobAdvert.jobAdvertId}>
-                                <Card.Content >
-                                    <Card.Header textAlign="left">{favouriteJobAdvert.jobAdvert.job.jobName}</Card.Header>
-                                    <Card.Meta textAlign="left">{favouriteJobAdvert.jobAdvert.employer.companyName}</Card.Meta>
-                                    <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.city.cityName} />
-                                    <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.workTime} />
-                                    <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.workStyle} />
-                                    <Card.Description  >
-                                        <div style={{ float: "left" }}>
-                                            {"Son Basvuru Tarihi: " + favouriteJobAdvert.jobAdvert.deadline}
-                                        </div>
-                                        <div style={{ float: "right" }}>
-                                            {"Oluşturulma tarihi: " + favouriteJobAdvert.jobAdvert.createTime}
-                                        </div>
-                                    </Card.Description>
-                                </Card.Content>
+                            <Card fluid color="teal" key={favouriteJobAdvert.jobAdvert.jobAdvertId}>
+                                <Card fluid color="teal" href={`/jobAdvert/${favouriteJobAdvert.jobAdvert.jobAdvertId}`} key={favouriteJobAdvert.jobAdvert.jobAdvertId}>
+                                    <Card.Content >
+                                        <Card.Header textAlign="left">{favouriteJobAdvert.jobAdvert.job.jobName}</Card.Header>
+                                        <Card.Meta textAlign="left">{favouriteJobAdvert.jobAdvert.employer.companyName}</Card.Meta>
+                                        <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.city.cityName} />
+                                        <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.workTime} />
+                                        <Card.Description textAlign="left" content={favouriteJobAdvert.jobAdvert.workStyle} />
+                                        <Card.Description  >
+                                            <div style={{ float: "left" }}>
+                                                {"Son Basvuru Tarihi: " + favouriteJobAdvert.jobAdvert.deadline}
+                                            </div>
+                                            <div style={{ float: "right" }}>
+                                                {"Oluşturulma tarihi: " + favouriteJobAdvert.jobAdvert.createTime}
+                                            </div>
+                                        </Card.Description>
+                                    </Card.Content>
+                                </Card>                              
+                                    <Button color="red" onClick={() => { handleDeleteFavourite(favouriteJobAdvert.id) }}>
+                                        <Icon name="trash alternate" />
+                                        Favorilerden Kaldır                                  
+                                </Button>
                             </Card>
 
                         ))}

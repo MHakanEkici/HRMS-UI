@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { toast } from "react-toastify";
 import { signOut } from '../store/actions/globalActions'
 
-export default function Navi({clearData}) {
+export default function Navi({ clearData }) {
 
     const { isLogin, isEmployer, isCandidate, candidate, employer } = useSelector(state => state.globalReducer)
 
@@ -40,6 +40,14 @@ export default function Navi({clearData}) {
             )
         }
     ];
+
+    const goToHomePage = (value, fieldName) => {
+        history.push("/")
+    }
+
+    const goToJobAdvertCreatePage = (value, fieldName) => {
+        history.push("/jobAdvertCreate")
+    }
 
     const goToLoginPage = (value, fieldName) => {
         history.push("/login")
@@ -74,47 +82,44 @@ export default function Navi({clearData}) {
 
         <Menu size='large' style={{ backgroundColor: "#45c4cd", fontFamily: 'Arial', fontize: '16px' }}>
             <Container>
-                
-                    <Link to={`/`}>
-                        <Menu.Item
-                            name='Anasayfa'
-                            style={{
-                                borderStyle: "solid",
-                                borderColor: "black",
-                                borderWidth: "revert",
-                                color: 'black',
-                                margin: "8px 0px",
-                                padding: "10px"
-                            }}
-                        />
-                    </Link>
+                <Menu.Item>
+                    <Button style={{
+                        borderStyle: "solid",
+                        borderColor: "black",
+                        borderWidth: "revert",
+                    }}
+                        primary onClick={() => goToHomePage()}> Anasayfa
+                    </Button>
+                </Menu.Item>
 
-                    {isEmployer &&
-                        <Link to={`/jobAdvertCreate`}>
-                            <Menu.Item
-                                name='İlan Oluştur'
-                            // active={activeItem === 'messages'}
-                            // onClick={this.handleItemClick}
-                            />
-                        </Link>
-                    }
+                {isEmployer &&
+                    <Menu.Item>
+                        <Button style={{
+                            borderStyle: "solid",
+                            borderColor: "black",
+                            borderWidth: "revert",
+                        }}
+                            primary onClick={() => goToJobAdvertCreatePage()}> İlan Oluştur
+                        </Button>
+                    </Menu.Item>
+                }
 
-                    {isCandidate &&
-                        <Fragment>
-                            <Menu.Item>
-                                Hoşgeldin {candidate.firstName + " " + candidate.lastName}
-                            </Menu.Item>
-                        </Fragment>
-                    }
-                    {isEmployer &&
-                        <Fragment>
-                            <Menu.Item>
-                                Hoşgeldin {employer.firstName + " " + employer.lastName}
-                            </Menu.Item>
-                        </Fragment>
-                    }
+                {isCandidate &&
+                    <Fragment>
+                        <Menu.Item>
+                            Hoşgeldin {candidate.firstName + " " + candidate.lastName}
+                        </Menu.Item>
+                    </Fragment>
+                }
+                {isEmployer &&
+                    <Fragment>
+                        <Menu.Item>
+                            Hoşgeldin {employer.companyName}
+                        </Menu.Item>
+                    </Fragment>
+                }
 
-                
+
                 <Menu.Menu position='right'>
                     <Menu.Item>
                         {isLogin
@@ -168,7 +173,8 @@ export default function Navi({clearData}) {
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => registerCandidate()}>Kayıt Ol</Button>
+                                    primary onClick={() => registerCandidate()}>Kayıt Ol
+                                </Button>
                             </Menu.Item>
                             <Menu.Item>
                                 <Button style={{
@@ -176,7 +182,8 @@ export default function Navi({clearData}) {
                                     borderColor: "black",
                                     borderWidth: "revert",
                                 }}
-                                    primary onClick={() => registerEmployer()}>İşveren Kaydı</Button>
+                                    primary onClick={() => registerEmployer()}>İşveren Kaydı
+                                </Button>
                             </Menu.Item>
                         </Fragment>
                     }
